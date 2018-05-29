@@ -6,7 +6,7 @@
 """
 
 # 覆盖flask 默认配置
-DEBUG = True
+DEBUG = False
 ENV = 'development'
 
 # 自定义配置 以dev.xx 形式调用
