@@ -6,12 +6,12 @@
 """
 from flask import jsonify
 
-from run import app
+from app.web import v1
 from utils.common import is_isbn_or_key
 from yushu_book import YuShuBook
 
 
-@app.route('/book/<keyword>/<page>')
+@v1.route('/book/<keyword>/<page>')
 def search(keyword, page):
     if is_isbn_or_key(keyword):
         data = YuShuBook.search_by_keyword(keyword, page)
