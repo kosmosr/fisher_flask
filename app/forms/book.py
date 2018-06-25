@@ -8,5 +8,5 @@ from wtforms import Form, StringField, validators, IntegerField
 
 
 class BookForm(Form):
-    keyword = StringField('keyword', [validators.data_required(message='关键字必填'), validators.Length(min=1, max=25)])
-    page = IntegerField('page', [validators.data_required(message='pagebitian')])
+    keyword = StringField('keyword', [validators.data_required(), validators.Length(min=1, max=25)])
+    page = IntegerField('page', [validators.data_required()])

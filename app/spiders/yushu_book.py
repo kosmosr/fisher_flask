@@ -4,7 +4,7 @@
 @author: zmh
 @time: 2018/5/22 16:30
 """
-from httper import HTTP
+from utils.httper import HTTP
 
 
 class YuShuBook:

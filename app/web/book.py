@@ -9,7 +9,7 @@ from flask import jsonify, request
 from app.forms.book import BookForm
 from app.web import v1
 from utils.common import is_isbn_or_key
-from yushu_book import YuShuBook
+from app.spiders.yushu_book import YuShuBook
 
 
 @v1.route('/book')
