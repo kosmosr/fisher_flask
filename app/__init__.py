@@ -7,6 +7,8 @@
 
 from flask import Flask
 
+from app.models import db
+from app.models.book import Book
 from config import config
 
 
@@ -14,6 +16,9 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(config)
     register_blueprint(app)
+
+    db.init_app(app)
+    db.create_all(app=app)
     return app
 
 
