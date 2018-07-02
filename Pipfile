@@ -9,7 +9,8 @@ requests = "*"
 wtforms = "*"
 sqlalchemy = "*"
 flask-sqlalchemy = "*"
-mysqlclient = "*"
+# mysqlclient 1.3.13 require VC++ 14.0
+"51effbf" = {file = "https://download.lfd.uci.edu/pythonlibs/j1ulh5xc/mysqlclient-1.3.13-cp36-cp36m-win_amd64.whl"}
 
 [dev-packages]
 
