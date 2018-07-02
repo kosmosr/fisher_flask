@@ -7,18 +7,33 @@
 from utils.httper import HTTP
 
 
+# TODO: 查询数据持久化 减少访问API
 class YuShuBook:
     keyword_url = 'http://t.yushu.im/v2/book/search?q={}&count={}&start={}'
     isbn_url = 'http://t.yushu.im/v2/book/isbn/{}'
 
-    @classmethod
-    def search_by_keyword(cls, keyword, start, count=10):
-        url = cls.keyword_url.format(keyword, count, start)
-        data = HTTP.get(url)
-        return data
+    def __init__(self):
+        self.total = 0
+        self.books = []
 
-    @classmethod
-    def search_by_isbn(cls, isbn):
-        url = cls.isbn_url.format(isbn)
+    def search_by_keyword(self, keyword, start, count=10):
+        url = self.keyword_url.format(keyword, count, self.cal_start(start))
         data = HTTP.get(url)
-        return data
+        self.__fill_collection(data)
+
+    def search_by_isbn(self, isbn):
+        url = self.isbn_url.format(isbn)
+        data = HTTP.get(url)
+        self.__fill_single(data)
+
+    def __fill_single(self, data):
+        if data:
+            self.total = 1
+            self.books.append(data)
+
+    def __fill_collection(self, data):
+        self.total = data['total']
+        self.books = data['books']
+
+    def cal_start(self, page):
+        return (page - 1) * 10

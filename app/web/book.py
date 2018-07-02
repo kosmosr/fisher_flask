@@ -4,26 +4,41 @@
 @author: zmh
 @time: 2018/5/28 13:53
 """
-from flask import jsonify, request
+import json
+
+from flask import jsonify, request, current_app
 
 from app.forms.book import BookForm
+from app.spiders.yushu_book import YuShuBook
+from app.view.book import BookCollection
 from app.web import v1
 from utils.common import is_isbn_or_key
-from app.spiders.yushu_book import YuShuBook
 
 
-@v1.route('/book')
+@v1.route('/book', methods=['GET'])
 def search():
     form = BookForm(request.args)
+    books = BookCollection()
+
     if form.validate():
         keyword = form.keyword.data
         page = form.page.data
-        if is_isbn_or_key(keyword):
-            data = YuShuBook.search_by_keyword(keyword, page)
-        else:
-            data = YuShuBook.search_by_isbn(keyword)
+        yushu_book = YuShuBook()
 
-        return jsonify(data)
+        if is_isbn_or_key(keyword):
+            yushu_book.search_by_keyword(keyword, page)
+            books.fill_data(keyword, yushu_book)
+        else:
+            yushu_book.search_by_isbn(keyword)
+            books.fill_data(keyword, yushu_book)
+        return current_app.response_class(
+            (json.dumps(books, ensure_ascii=False, default=lambda o: o.__dict__)),
+            mimetype=current_app.config['JSONIFY_MIMETYPE']
+        )
     else:
-        dict = ([v for k, v in form.errors.items()])
-        return jsonify({'errmsg': dict})
+        return jsonify({'errmsg': '参数错误'})
+
+
+@v1.route('/test', methods=['GET'])
+def test():
+    return jsonify({'data': 'tnk'})
