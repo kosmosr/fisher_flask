@@ -4,7 +4,9 @@
 @author: zmh
 @time: 2018/7/2 16:01
 """
-from sqlalchemy import Column, Integer, String, Boolean, Float
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime
 
 from app import db
 
@@ -24,3 +26,5 @@ class User(db.Model):
     receive_counter = Column(Integer, default=0)
     wx_open_id = Column(String(50))
     wx_name = Column(String(32))
+    is_deleted = Column(Boolean, default=False)
+    create_time = Column(DateTime, default=datetime.now())
