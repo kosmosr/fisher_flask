@@ -20,7 +20,7 @@ class User(Base):
     phone_number = Column(String(18), unique=True)
     # 邮箱
     email = Column(String(50), unique=True, nullable=False)
-    _password = Column('password', String(64), nullable=False)
+    _password = Column('password', String(128), nullable=False)
     confirmed = Column(Boolean, default=False)
     beans = Column(Float, default=0)
     send_counter = Column(Integer, default=0)
