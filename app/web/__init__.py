@@ -6,6 +6,6 @@
 """
 from flask import Blueprint
 
-v1 = Blueprint('v1', __name__, url_prefix='/v1')
+web = Blueprint('web', __name__)
 
-from app.web import book
+from app.web import auth, book, drift, gift, main, wish

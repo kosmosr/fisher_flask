@@ -16,6 +16,10 @@ class YuShuBook:
         self.total = 0
         self.books = []
 
+    @property
+    def first(self):
+        return self.books[0] if self.total >= 1 else None
+
     def search_by_keyword(self, keyword, start, count=10):
         url = self.keyword_url.format(keyword, count, self.cal_start(start))
         data = HTTP.get(url)

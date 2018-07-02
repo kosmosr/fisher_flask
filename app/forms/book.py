@@ -9,4 +9,4 @@ from wtforms import Form, StringField, validators, IntegerField
 
 class BookForm(Form):
     keyword = StringField('keyword', [validators.data_required(), validators.Length(min=1, max=25)])
-    page = IntegerField('page', [validators.data_required()])
+    page = IntegerField('page', default=1)

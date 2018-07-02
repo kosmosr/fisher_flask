@@ -23,5 +23,5 @@ def create_app():
 
 
 def register_blueprint(app: Flask):
-    from .web import v1
-    app.register_blueprint(v1)
+    from .web import web
+    app.register_blueprint(web)
