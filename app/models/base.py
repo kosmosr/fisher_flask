@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+# encoding: utf-8
+"""
+@author: zmh
+@time: 2018/7/2 17:02
+"""
+from datetime import datetime
+
+from sqlalchemy import Column, Boolean, DateTime
+
+from app import db
+
+
+class Base(db.Model):
+    # 忽略SQLAlchemy对该模型的创表
+    __abstract__ = True
+    is_deleted = Column(Boolean, default=False)
+    create_time = Column(DateTime, default=datetime.now())
+
+    def set_attrs(self, attrs_dict: dict):
+        for k, v in attrs_dict.items():
+            if hasattr(self, k) and k != 'id':
+                setattr(self, k, v)

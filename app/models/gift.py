@@ -8,10 +8,10 @@ from datetime import datetime
 
 from sqlalchemy import Column, Integer, Boolean, String, DateTime
 
-from app import db
+from app.models.base import Base
 
 
-class Gift(db.Model):
+class Gift(Base):
     __table_args = {'mysql_charset': 'utf8mb4'}
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, nullable=False)
