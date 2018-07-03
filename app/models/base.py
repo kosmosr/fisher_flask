@@ -13,9 +13,13 @@ from app import db
 
 class Base(db.Model):
     # 忽略SQLAlchemy对该模型的创表
+    # create_time是类变量 程序启动时就会设置默认值 应该在初始化实例时设置时间
     __abstract__ = True
     is_deleted = Column(Boolean, default=False)
-    create_time = Column(DateTime, default=datetime.now())
+    create_time = Column(DateTime)
+
+    def __init__(self):
+        self.create_time = datetime.now()
 
     def set_attrs(self, attrs_dict: dict):
         for k, v in attrs_dict.items():
