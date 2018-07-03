@@ -11,12 +11,14 @@ class BookViewModel:
     def __init__(self, data):
         self.title = data['title']
         self.publisher = data['publisher']
-        self.pages = data['pages']
+        self.pages = data['pages'] or ''
         self.author = '、'.join(data['author'])
         self.price = data['price']
-        self.summary = data['summary']
+        self.summary = data['summary'] or ''
         self.isbn = data['isbn']
         self.image = data['image']
+        self.pubdate = data['pubdate']
+        self.binding = data['binding']
 
     @property
     def intro(self):
