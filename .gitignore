@@ -170,3 +170,6 @@ pyvenv.cfg
 pip-selfcheck.json
 
 .idea
+/test/
+/app/static/
+/app/templates/
