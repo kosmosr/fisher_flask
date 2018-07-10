@@ -6,7 +6,14 @@
 """
 from contextlib import contextmanager
 
-from flask_sqlalchemy import SQLAlchemy as _SQLAlcheymy
+from flask_sqlalchemy import SQLAlchemy as _SQLAlcheymy, BaseQuery
+
+
+class Query(BaseQuery):
+    def filter_by(self, **kwargs):
+        if 'is_deleted' not in kwargs.keys():
+            kwargs['is_deleted'] = False
+        return super(Query, self).filter_by(**kwargs)
 
 
 class SQLAlchemy(_SQLAlcheymy):
@@ -21,4 +28,4 @@ class SQLAlchemy(_SQLAlcheymy):
             raise e
 
 
-db = SQLAlchemy()
+db = SQLAlchemy(query_class=Query)
