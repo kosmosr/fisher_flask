@@ -19,7 +19,7 @@ class BookViewModel:
         self.isbn = data['isbn']
         self.image = data['image']
         self.pubdate = data['pubdate']
-        self.binding = data['binding']
+        self.binding = data['binding'] or ''
 
     @property
     def intro(self):
