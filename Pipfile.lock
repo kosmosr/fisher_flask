@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c1f2b5787c551b2864f8647b9f7138d148b549c10dbf1128093d72feb19fa452"
+            "sha256": "17fcdb31e59624b069a162f01be2adf731d2ee972144813821d38bb66d1e1b8d"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -10,14 +10,14 @@
         "sources": [
             {
                 "name": "pypi",
-                "url": "https://pypi.python.org/simple",
-                "verify_ssl": true
+                "url": "http://pypi.doubanio.com/simple/",
+                "verify_ssl": false
             }
         ]
     },
     "default": {
-        "51effbf": {
-            "file": "https://download.lfd.uci.edu/pythonlibs/j1ulh5xc/mysqlclient-1.3.13-cp36-cp36m-win_amd64.whl"
+        "1a4ec11": {
+            "file": "https://download.lfd.uci.edu/pythonlibs/t5ulg2xd/mysqlclient-1.3.13-cp36-cp36m-win_amd64.whl"
         },
         "alembic": {
             "hashes": [
@@ -148,7 +148,6 @@
             "hashes": [
                 "sha256:e21e5561a85dcdf16b8520ae4daec7401c5c24558e0ce004f9b60be75c4b6957"
             ],
-            "index": "pypi",
             "version": "==1.2.9"
         },
         "urllib3": {
