@@ -10,6 +10,7 @@ __author__ = '七月'
 
 
 @web.route('/my/wish')
+@login_required
 def my_wish():
     wishes_of_mine = Wish.get_user_wishes(current_user.id)
     isbns = [wish.isbn for wish in wishes_of_mine]
