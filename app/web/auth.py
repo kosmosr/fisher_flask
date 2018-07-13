@@ -1,9 +1,11 @@
 from flask import render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user
+from flask_login import login_user, logout_user, current_user
 
-from app import db
-from app.forms.auth import RegisterForm, LoginForm
+from app import db, redis
+from app.const.redis_key import token_key
+from app.forms.auth import RegisterForm, LoginForm, BaseForm, ResetPasswordForm
 from app.models.user import User
+from utils.common import encode_token
 from . import web
 
 __author__ = '七月'
@@ -40,12 +42,26 @@ def login():
 
 @web.route('/reset/password', methods=['GET', 'POST'])
 def forget_password_request():
-    pass
+    form = BaseForm(request.form)
+    if request.method == 'POST':
+        if form.validate():
+            email = form.email.data
+            user = User.query.filter_by(email=email).first_or_404()
+            if user:
+                from utils.email import send_email
+                token = encode_token(user.id)
+                redis_key = token_key.format(user.id)
+                redis.set(redis_key, token)
+                send_email(form.email.data, '重置你的密码', 'email/reset_password.html', user=user, token=token)
+    return render_template('auth/forget_password_request.html', form=form)
 
 
 @web.route('/reset/password/<token>', methods=['GET', 'POST'])
 def forget_password(token):
-    pass
+    form = ResetPasswordForm(request.form)
+    if request.method == 'POST' and form.validate():
+        pass
+    return render_template('auth/forget_password.html', form=form)
 
 
 @web.route('/change/password', methods=['GET', 'POST'])
