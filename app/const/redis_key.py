@@ -5,4 +5,4 @@
 @time: 2018/7/13 16:36
 """
 
-token_key = "user:token:{}"
+reset_password_token_key = "user:token:{}"

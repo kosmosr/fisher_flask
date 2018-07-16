@@ -4,7 +4,7 @@
 @author: zmh
 @time: 2018/5/22 15:57
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from config import config
 
@@ -39,5 +39,16 @@ def decode_token(token):
     return payload
 
 
-def check_token(token):
-    redis
+def check_token(token, token_from_redis, payload):
+    """
+    检验token有效性
+    :param token:
+    :param token_from_redis:
+    :param payload:
+    :return:
+    """
+    if token_from_redis and token_from_redis.decode() == token and datetime.fromtimestamp(
+            payload['timestamp']) + timedelta(seconds=config.RESET_TOKEN_EXPIRE_TIME) > datetime.now():
+        return True
+    else:
+        return False

@@ -1,13 +1,15 @@
+from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user
 
 from app import db
-from app.const.redis_key import token_key
+from app.const.redis_key import reset_password_token_key
+from app.const.status import TOKEN_INVALID
 from app.forms.auth import RegisterForm, LoginForm, BaseForm, ResetPasswordForm
 from app.models.user import User
 from config import config
 from ext.redis import redis
-from utils.common import encode_token, decode_token
+from utils.common import encode_token, decode_token, check_token
 from . import web
 
 __author__ = '七月'
@@ -52,7 +54,7 @@ def forget_password_request():
             if user:
                 from utils.email import send_email
                 token = encode_token(user.id)
-                redis_key = token_key.format(user.id)
+                redis_key = reset_password_token_key.format(user.id)
                 redis.setex(redis_key, token, time=config.RESET_TOKEN_EXPIRE_TIME)
                 send_email(form.email.data, '重置你的密码', 'email/reset_password.html', user=user, token=token)
     return render_template('auth/forget_password_request.html', form=form)
@@ -63,6 +65,14 @@ def forget_password(token):
     form = ResetPasswordForm(request.form)
     if request.method == 'POST' and form.validate():
         payload = decode_token(token)
+        # 验证token一致性
+        redis_key = reset_password_token_key.format(payload['uid'])
+        token_from_redis = redis.get(redis_key)
+        if check_token(token, token_from_redis, payload):
+            User.reset_password(payload['uid'], form.password1.data)
+            return redirect(url_for('web.index'))
+        else:
+            flash(TOKEN_INVALID)
     return render_template('auth/forget_password.html', form=form)
 
 

@@ -14,6 +14,7 @@ from app.models.gift import Gift
 from app.models.wish import Wish
 from app.spiders.yushu_book import YuShuBook
 from ext import login_manager
+from ext.db import db
 from utils.common import is_isbn_or_key
 
 
@@ -51,6 +52,13 @@ class User(UserMixin, Base):
         """
 
         return check_password_hash(self.password, raw)
+
+    @staticmethod
+    def reset_password(uid, password):
+        user = User.query.filter_by(id=uid).first_or_404()
+        with db.auto_commit():
+            user.password = password
+            db.session.add(user)
 
     def can_save_to_list(self, isbn):
         # 检验isbn 以及是否存在于yushu api中
