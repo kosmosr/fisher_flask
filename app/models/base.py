@@ -8,7 +8,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, Boolean, DateTime
 
-from app import db
+from ext.db import db
 
 
 class Base(db.Model):

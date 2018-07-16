@@ -5,9 +5,9 @@
 @time: 2018/5/22 14:17
 """
 from app import create_app
-from config import dev
+from config import config
 
 app = create_app()
 
 if __name__ == "__main__":
-    app.run(host=dev.host, port=dev.port)
+    app.run(host=config.HOST, port=config.PORT)

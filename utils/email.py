@@ -7,7 +7,7 @@
 from flask import render_template
 from flask_mail import Message
 
-from app import mail
+from ext import mail
 
 
 def send_email(to, subject, template, **kwargs):

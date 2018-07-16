@@ -5,6 +5,7 @@
 @time: 2018/5/22 15:57
 """
 from datetime import datetime
+
 from config import config
 
 import jwt
@@ -31,3 +32,12 @@ def encode_token(uid):
     }
     token = jwt.encode(payload, key=config.SECRET_KEY).decode()
     return token
+
+
+def decode_token(token):
+    payload = jwt.decode(token, key=config.SECRET_KEY)
+    return payload
+
+
+def check_token(token):
+    redis

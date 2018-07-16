@@ -8,7 +8,7 @@ from typing import List
 
 from sqlalchemy import Column, Integer, String, Boolean, desc, func
 
-from app import db
+from ext.db import db
 from app.models.base import Base
 from app.spiders.yushu_book import YuShuBook
 

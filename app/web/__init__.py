@@ -5,10 +5,8 @@
 @time: 2018/5/28 13:53
 """
 from flask import Blueprint, render_template
-from flask_login import LoginManager
 
 web = Blueprint('web', __name__)
-login_manager = LoginManager()
 
 
 @web.errorhandler(404)

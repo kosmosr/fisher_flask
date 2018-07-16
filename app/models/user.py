@@ -13,7 +13,7 @@ from app.models.base import Base
 from app.models.gift import Gift
 from app.models.wish import Wish
 from app.spiders.yushu_book import YuShuBook
-from app.web import login_manager
+from ext import login_manager
 from utils.common import is_isbn_or_key
 
 

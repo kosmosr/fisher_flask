@@ -1,7 +1,7 @@
 from flask import flash, redirect, url_for, render_template
 from flask_login import login_required, current_user
 
-from app.models import db
+from ext.db import db
 from app.models.gift import Gift
 from app.view.gift import MyGifts
 from . import web

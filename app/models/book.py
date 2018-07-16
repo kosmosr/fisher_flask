@@ -7,7 +7,7 @@
 
 from sqlalchemy import Column, Integer, String
 
-from app.models import db
+from ext.db import db
 
 
 class Book(db.Model):

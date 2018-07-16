@@ -7,6 +7,8 @@
 
 
 class DevelopmentConfig:
+    HOST = 'localhost'
+    PORT = 9527
     DEBUG = True
     ENV = 'development'
     SQLALCHEMY_DATABASE_URI = 'mysql+mysqldb://root:Zengminghao_1997@www.mollysu.top:3306/fisher'
@@ -24,6 +26,9 @@ class DevelopmentConfig:
 
     # REDIS
     REDIS_URL = "redis://www.mollysu.top:6379/0"
+
+    # EXPIRES TIME
+    RESET_TOKEN_EXPIRE_TIME = 60 * 60 * 3
 
 
 class ProductionConfig:
