@@ -11,7 +11,7 @@ class DevelopmentConfig:
     PORT = 9527
     DEBUG = True
     ENV = 'development'
-    SQLALCHEMY_DATABASE_URI = 'mysql+mysqldb://root:Zengminghao_1997@www.mollysu.top:3306/fisher'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Zengminghao_1997@10.10.76.1:13306/fisher'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = '97ab1951-3548-4b9a-8f74-5310b552335b'
 
@@ -25,7 +25,7 @@ class DevelopmentConfig:
     MAIL_SUBJECT_PREFIX = '[FISHER]'
 
     # REDIS
-    REDIS_URL = "redis://www.mollysu.top:6379/0"
+    REDIS_URL = "redis://10.10.76.1:16379/0"
 
     # EXPIRES TIME
     RESET_TOKEN_EXPIRE_TIME = 60 * 60 * 3

@@ -33,6 +33,6 @@ def send_email(to, subject, template, **kwargs):
     msg = Message('[FISHER]' + ' ' + subject,
                   recipients=[to])
     msg.html = render_template(template, **kwargs)
-    app = current_app._get_current_object
+    app = current_app._get_current_object()
     mail_thread = Thread(target=send_async_email, name='mail_thread', args=[app, msg])
     mail_thread.start()
