@@ -14,7 +14,6 @@ from app.spiders.yushu_book import YuShuBook
 
 
 class Wish(Base):
-    __table_args = {'mysql_charset': 'utf8mb4'}
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, nullable=False)
     isbn = Column(String(15), nullable=False)

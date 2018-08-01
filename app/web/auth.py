@@ -1,4 +1,3 @@
-from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user
 
@@ -10,6 +9,7 @@ from app.models.user import User
 from config import config
 from ext.redis import redis
 from utils.common import encode_token, decode_token, check_token
+from utils.email import send_email
 from . import web
 
 __author__ = '七月'
@@ -52,11 +52,12 @@ def forget_password_request():
             email = form.email.data
             user = User.query.filter_by(email=email).first_or_404()
             if user:
-                from utils.email import send_email
                 token = encode_token(user.id)
                 redis_key = reset_password_token_key.format(user.id)
                 redis.setex(redis_key, token, time=config.RESET_TOKEN_EXPIRE_TIME)
                 send_email(form.email.data, '重置你的密码', 'email/reset_password.html', user=user, token=token)
+                flash('一封邮件已发送到邮件' + email + ', 请及时查收')
+                return redirect(url_for('web.login'))
     return render_template('auth/forget_password_request.html', form=form)
 
 

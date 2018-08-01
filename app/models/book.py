@@ -11,7 +11,6 @@ from ext.db import db
 
 
 class Book(db.Model):
-    __table_args = {'mysql_charset': 'utf8mb4'}
     id = Column(Integer, primary_key=True, autoincrement=True)
     # 标题
     title = Column(String(50), nullable=False)

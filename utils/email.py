@@ -4,10 +4,20 @@
 @author: zmh
 @time: 2018/7/13 14:49
 """
-from flask import render_template
+from threading import Thread
+
+from flask import render_template, Flask, current_app
 from flask_mail import Message
 
 from ext import mail
+
+
+def send_async_email(app: Flask, msg):
+    with app.app_context():
+        try:
+            mail.send(msg)
+        except Exception as e:
+            raise e
 
 
 def send_email(to, subject, template, **kwargs):
@@ -23,4 +33,6 @@ def send_email(to, subject, template, **kwargs):
     msg = Message('[FISHER]' + ' ' + subject,
                   recipients=[to])
     msg.html = render_template(template, **kwargs)
-    mail.send(msg)
+    app = current_app._get_current_object
+    mail_thread = Thread(target=send_async_email, name='mail_thread', args=[app, msg])
+    mail_thread.start()
