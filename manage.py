@@ -19,6 +19,7 @@ from app.models.book import Book
 from app.models.user import User
 from app.models.gift import Gift
 from app.models.wish import Wish
+from app.models.drift import Drift
 # 让python支持命令行工作
 manager = Manager(app)
 

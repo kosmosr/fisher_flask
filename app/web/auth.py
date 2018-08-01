@@ -23,7 +23,7 @@ def register():
             user = User()
             user.set_attrs(form.data)
             db.session.add(user)
-        redirect(url_for('web.login'))
+        return redirect(url_for('web.login'))
     return render_template('auth/register.html', form=form)
 
 
