@@ -17,14 +17,14 @@ __author__ = '七月'
 
 @web.route('/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm(request.form)
-    if request.method == 'POST' and form.validate():
+    args = request.get_json()
+    if request.method == 'POST':
         with db.auto_commit():
             user = User()
-            user.set_attrs(form.data)
+            # user.set_attrs(form.data)
             db.session.add(user)
         return redirect(url_for('web.login'))
-    return render_template('auth/register.html', form=form)
+    return render_template('auth/register.html')
 
 
 @web.route('/login', methods=['GET', 'POST'])

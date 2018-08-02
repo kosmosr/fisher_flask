@@ -6,8 +6,9 @@
 """
 from app import create_app
 from config import config
+from ext import app
 
-app = create_app()
+server = create_app(app=app)
 
 if __name__ == "__main__":
-    app.run(host=config.HOST, port=config.PORT)
+    server.run(host=config.HOST, port=config.PORT)

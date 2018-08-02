@@ -4,10 +4,11 @@
 @author: zmh
 @time: 2018/7/16 16:33
 """
-
+from flask import Flask
 from flask_login import LoginManager
 from flask_mail import Mail
 
+app = Flask('app')
 mail = Mail()
 
 login_manager = LoginManager()

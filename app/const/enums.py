@@ -17,3 +17,25 @@ class PendingStatus(IntEnum):
     Reject = 3
     # 撤销
     Redraw = 4
+
+    @classmethod
+    def pending_str(cls, status, key):
+        key_map = {
+            1: {
+                'requester': '等待对方邮寄',
+                'gifter': '等待你邮寄'
+            },
+            2: {
+                'requester': '对方已邮寄',
+                'gifter': '你已邮寄,交易成功'
+            },
+            3: {
+                'requester': '对方已拒绝',
+                'gifter': '你已拒绝'
+            },
+            4: {
+                'requester': '你已撤销',
+                'gifter': '对方已撤销'
+            }
+        }
+        return key_map[status][key]

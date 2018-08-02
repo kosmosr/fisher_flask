@@ -39,5 +39,9 @@ def satisfy_wish(wid):
 
 
 @web.route('/wish/book/<isbn>/redraw')
+@login_required
 def redraw_from_wish(isbn):
-    pass
+    wish = Wish.query.filter_by(isbn=isbn, launched=False).first_or_404()
+    with db.auto_commit():
+        wish.is_deleted = True
+    return redirect(url_for('web.my_wish'))

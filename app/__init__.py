@@ -13,8 +13,7 @@ from ext import login_manager, mail
 from ext.db import db
 
 
-def create_app():
-    app = Flask(__name__)
+def create_app(app: Flask):
     app.config.from_object(config)
     register_blueprint(app)
 
