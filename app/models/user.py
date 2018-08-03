@@ -22,7 +22,6 @@ from utils.common import is_isbn_or_key
 
 
 class User(UserMixin, Base):
-    __table_args = {'mysql_charset': 'utf8mb4'}
     id = Column(Integer, primary_key=True, autoincrement=True)
     # 昵称
     nickname = Column(String(24), nullable=False)

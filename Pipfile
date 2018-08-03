@@ -16,6 +16,7 @@ pyjwt = "*"
 redis = "*"
 pymysql = "*"
 marshmallow = "*"
+flask-cors = "*"
 
 [dev-packages]
 

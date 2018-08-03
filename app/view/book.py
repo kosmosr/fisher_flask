@@ -26,6 +26,20 @@ class BookViewModel:
         return '/'.join([intro for intro
                          in [self.author, self.publisher, self.price] if intro])
 
+    def to_json(self):
+        return {
+            'title': self.title,
+            'publisher': self.publisher,
+            'pages': self.pages,
+            'author': self.author,
+            'price': self.price,
+            'summary': self.summary,
+            'isbn': self.isbn,
+            'image': self.image,
+            'pubdate': self.pubdate,
+            'binding': self.binding
+        }
+
 
 class BookCollection:
     def __init__(self):
