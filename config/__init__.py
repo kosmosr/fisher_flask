@@ -4,7 +4,9 @@
 @author: zmh
 @time: 2018/5/22 14:59
 """
-prod = False
+import os
+
+prod = os.getenv('prod', False)
 
 if prod:
     from .config import ProductionConfig

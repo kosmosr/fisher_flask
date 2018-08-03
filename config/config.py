@@ -4,6 +4,7 @@
 @author: zmh
 @time: 2018/5/29 11:14
 """
+import os
 
 
 class DevelopmentConfig:
@@ -34,3 +35,4 @@ class DevelopmentConfig:
 class ProductionConfig:
     DEBUG = False
     ENV = 'production'
+    PORT = os.getenv('port', 8000)
