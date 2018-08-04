@@ -4,10 +4,11 @@
 @author: zmh
 @time: 2018/7/2 16:01
 """
+from datetime import datetime
 from math import floor
 
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, Boolean, Float
+from sqlalchemy import Column, Integer, String, DateTime, Numeric
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.const.enums import PendingStatus
@@ -30,13 +31,13 @@ class User(UserMixin, Base):
     # 邮箱
     email = Column(String(50), unique=True, nullable=False)
     _password = Column('password', String(128), nullable=False)
-    confirmed = Column(Boolean, default=False)
     # 鱼豆
-    beans = Column(Float, default=0)
+    beans = Column(Numeric(8, 2))
     send_counter = Column(Integer, default=0)
     receive_counter = Column(Integer, default=0)
     wx_open_id = Column(String(50))
     wx_name = Column(String(32))
+    update_time = Column(DateTime, default=datetime.now(), onupdate=datetime.now())
 
     @property
     def password(self):
