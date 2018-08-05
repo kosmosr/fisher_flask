@@ -15,6 +15,7 @@ class DevelopmentConfig:
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:Zengminghao_1997@10.10.76.1:13306/fisher'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = '97ab1951-3548-4b9a-8f74-5310b552335b'
+    TRAP_HTTP_EXCEPTIONS = True
 
     # EMAIL
     MAIL_SERVER = 'smtp.qq.com'

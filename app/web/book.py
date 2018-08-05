@@ -14,11 +14,11 @@ from app.models.wish import Wish
 from app.spiders.yushu_book import YuShuBook
 from app.view.book import BookCollection, BookViewModel
 from app.view.trade import TradeInfo
-from app.web import web
+from app.web import api_v1
 from utils.common import is_isbn_or_key
 
 
-@web.route('/book/search', methods=['GET'])
+@api_v1.route('/book/search', methods=['GET'])
 def search():
     form = BookForm(request.args)
     books = BookCollection()
@@ -43,7 +43,7 @@ def search():
     return render_template('search_result.html', books=books)
 
 
-@web.route('/book/<isbn>/detail')
+@api_v1.route('/book/<isbn>/detail')
 def book_detail(isbn):
     has_in_gifts = False
     has_in_wishes = False

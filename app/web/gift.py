@@ -1,18 +1,17 @@
 from flask import flash, redirect, url_for, render_template
-from flask_login import login_required, current_user
+from flask_login import current_user
 
-from app.const.enums import PendingStatus
+from app.common.enums import PendingStatus
 from app.models.drift import Drift
-from ext.db import db
 from app.models.gift import Gift
 from app.view.gift import MyGifts
-from . import web
+from ext.db import db
+from . import api_v1
 
 __author__ = '七月'
 
 
-@web.route('/my/gifts')
-@login_required
+@api_v1.route('/my/gifts')
 def my_gifts():
     gifts_of_mine = Gift.get_user_gifts(current_user.id)
     isbns = [gift.isbn for gift in gifts_of_mine]
@@ -21,8 +20,7 @@ def my_gifts():
     return render_template('my_gifts.html', gifts=view.gifts)
 
 
-@web.route('/gifts/book/<isbn>')
-@login_required
+@api_v1.route('/gifts/book/<isbn>')
 def save_to_gifts(isbn):
     if current_user.can_save_to_list(isbn):
         with db.auto_commit():
@@ -36,8 +34,7 @@ def save_to_gifts(isbn):
     return redirect(url_for('web.book_detail', isbn=isbn))
 
 
-@web.route('/gifts/<gid>/redraw')
-@login_required
+@api_v1.route('/gifts/<gid>/redraw')
 def redraw_from_gifts(gid):
     gift = Gift.query.filter_by(id=gid, launched=False).first_or_404()
     drift = Drift.query.filter_by(gift_id=gid, pending=PendingStatus.Waiting.value).first()

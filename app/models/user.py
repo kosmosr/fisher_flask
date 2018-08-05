@@ -7,22 +7,20 @@
 from datetime import datetime
 from math import floor
 
-from flask_login import UserMixin
 from sqlalchemy import Column, Integer, String, DateTime, Numeric
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app.const.enums import PendingStatus
+from app.common.enums import PendingStatus
 from app.models.base import Base
 from app.models.drift import Drift
 from app.models.gift import Gift
 from app.models.wish import Wish
 from app.spiders.yushu_book import YuShuBook
-from ext import login_manager
 from ext.db import db
 from utils.common import is_isbn_or_key
 
 
-class User(UserMixin, Base):
+class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     # 昵称
     nickname = Column(String(24), nullable=False)
@@ -32,7 +30,7 @@ class User(UserMixin, Base):
     email = Column(String(50), unique=True, nullable=False)
     _password = Column('password', String(128), nullable=False)
     # 鱼豆
-    beans = Column(Numeric(8, 2))
+    beans = Column(Numeric(8, 2), default=0)
     send_counter = Column(Integer, default=0)
     receive_counter = Column(Integer, default=0)
     wx_open_id = Column(String(50))
@@ -97,8 +95,3 @@ class User(UserMixin, Base):
             email=self.email,
             send_receive=f'{self.send_counter}/{self.receive_counter}'
         )
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)

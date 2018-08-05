@@ -4,29 +4,22 @@
 @author: zmh
 @time: 2018/8/3 17:09
 """
-import json
-
-from flask import current_app
 
 
 class HttpCode:
-    def __init__(self, code):
+    def __init__(self, code: int):
         self.code = code
 
 
-class SuccessResponse:
-    def __init__(self, data):
-        self.code = OK.code
-        self.data = data
-
-    def build(self):
-        return current_app.response_class(
-            (json.dumps(self.data, ensure_ascii=False)),
-            mimetype=current_app.config['JSONIFY_MIMETYPE']
-        )
+class ErrorCode(HttpCode):
+    def __init__(self, http_code, code: str, message=None):
+        super(ErrorCode, self).__init__(http_code)
+        self.code = code
+        self.message = message
 
 
 OK = HttpCode(200)
+CREATED = HttpCode(201)
 # 客户端错误 4xx
 # 请求语法格式错误、无效的请求、无效的签名
 BadRequest = HttpCode(400)

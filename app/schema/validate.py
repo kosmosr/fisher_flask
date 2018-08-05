@@ -4,9 +4,11 @@
 @author: zmh
 @time: 2018/8/2 16:47
 """
-from marshmallow import Schema, fields, validate, validates
+from marshmallow import Schema, fields, validate, validates, ValidationError
 
-from app.const.status import VALIDATE_NICKNAME_ERROR, VALIDATE_PASSWORD_ERROR
+from app.common.const import VALIDATE_NICKNAME_ERROR, VALIDATE_PASSWORD_ERROR, VALIDATE_NICKNAME_EXIST, \
+    VALIDATE_EMAIL_EXIST
+from app.models.user import User
 
 
 class RegisterValSchema(Schema):
@@ -16,5 +18,12 @@ class RegisterValSchema(Schema):
 
     @validates('nickname')
     def validate_nickname(self, value):
-        pass
+        user = User.query.filter_by(nickname=value).first()
+        if user:
+            raise ValidationError(message=VALIDATE_NICKNAME_EXIST)
 
+    @validates('email')
+    def validate_email(self, value):
+        user = User.query.filter_by(email=value).first()
+        if user:
+            raise ValidationError(message=VALIDATE_EMAIL_EXIST)

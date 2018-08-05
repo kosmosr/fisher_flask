@@ -6,7 +6,7 @@
 """
 from typing import List
 
-from app.const.enums import PendingStatus
+from app.common.enums import PendingStatus
 from app.models.drift import Drift
 
 

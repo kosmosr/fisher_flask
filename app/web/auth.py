@@ -2,32 +2,35 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user
 
 from app import db
-from app.const.redis_key import reset_password_token_key
-from app.const.status import TOKEN_INVALID
-from app.forms.auth import RegisterForm, LoginForm, BaseForm, ResetPasswordForm
+from app.common.const import TOKEN_INVALID
+from app.common.httpcode import CREATED
+from app.common.redis_key import reset_password_token_key
+from app.common.response import SuccessResponse
+from app.forms.auth import LoginForm, BaseForm, ResetPasswordForm
 from app.models.user import User
+from app.schema.validate import RegisterValSchema
 from config import config
 from ext.redis import redis
 from utils.common import encode_token, decode_token, check_token
 from utils.email import send_email
-from . import web
+from . import api_v1
 
-__author__ = '七月'
+__author__ = 'kosmosr'
 
 
-@web.route('/register', methods=['GET', 'POST'])
+# 注册
+@api_v1.route('/users', methods=['POST'])
 def register():
     args = request.get_json()
-    if request.method == 'POST':
-        with db.auto_commit():
-            user = User()
-            # user.set_attrs(form.data)
-            db.session.add(user)
-        return redirect(url_for('web.login'))
-    return render_template('auth/register.html')
+    schema = RegisterValSchema(strict=True).load(args)
+    with db.auto_commit():
+        user = User()
+        user.set_attrs(schema.data)
+        db.session.add(user)
+    return SuccessResponse(CREATED).make()
 
 
-@web.route('/login', methods=['GET', 'POST'])
+@api_v1.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -44,7 +47,7 @@ def login():
     pass
 
 
-@web.route('/reset/password', methods=['GET', 'POST'])
+@api_v1.route('/reset/password', methods=['GET', 'POST'])
 def forget_password_request():
     form = BaseForm(request.form)
     if request.method == 'POST':
@@ -61,7 +64,7 @@ def forget_password_request():
     return render_template('auth/forget_password_request.html', form=form)
 
 
-@web.route('/reset/password/<token>', methods=['GET', 'POST'])
+@api_v1.route('/reset/password/<token>', methods=['GET', 'POST'])
 def forget_password(token):
     form = ResetPasswordForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -77,12 +80,12 @@ def forget_password(token):
     return render_template('auth/forget_password.html', form=form)
 
 
-@web.route('/change/password', methods=['GET', 'POST'])
+@api_v1.route('/change/password', methods=['GET', 'POST'])
 def change_password():
     pass
 
 
-@web.route('/logout')
+@api_v1.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('web.index'))

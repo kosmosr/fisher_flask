@@ -6,7 +6,7 @@
 """
 from sqlalchemy import Column, Integer, String, SmallInteger
 
-from app.const.enums import PendingStatus
+from app.common.enums import PendingStatus
 from app.models.base import Base
 
 

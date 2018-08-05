@@ -1,16 +1,15 @@
 from flask import flash, redirect, url_for, render_template
-from flask_login import login_required, current_user
+from flask_login import current_user
 
 from app import db
 from app.models.wish import Wish
 from app.view.wish import MyWishes
-from . import web
+from . import api_v1
 
 __author__ = '七月'
 
 
-@web.route('/my/wish')
-@login_required
+@api_v1.route('/my/wish')
 def my_wish():
     wishes_of_mine = Wish.get_user_wishes(current_user.id)
     isbns = [wish.isbn for wish in wishes_of_mine]
@@ -19,8 +18,7 @@ def my_wish():
     return render_template('my_wish.html', wishes=wishes.gifts)
 
 
-@web.route('/wish/book/<isbn>')
-@login_required
+@api_v1.route('/wish/book/<isbn>')
 def save_to_wish(isbn):
     if current_user.can_save_to_list(isbn):
         with db.auto_commit():
@@ -33,13 +31,12 @@ def save_to_wish(isbn):
     return redirect(url_for('web.book_detail', isbn=isbn))
 
 
-@web.route('/satisfy/wish/<int:wid>')
+@api_v1.route('/satisfy/wish/<int:wid>')
 def satisfy_wish(wid):
     pass
 
 
-@web.route('/wish/book/<isbn>/redraw')
-@login_required
+@api_v1.route('/wish/book/<isbn>/redraw')
 def redraw_from_wish(isbn):
     wish = Wish.query.filter_by(isbn=isbn, launched=False).first_or_404()
     with db.auto_commit():

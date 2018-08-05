@@ -4,14 +4,8 @@
 @author: zmh
 @time: 2018/5/28 13:53
 """
-from flask import Blueprint, render_template
+from flask import Blueprint
 
-web = Blueprint('web', __name__)
-
-
-@web.errorhandler(404)
-def not_found(e):
-    return render_template('404.html'), 404
-
+api_v1 = Blueprint('api_v1', __name__, url_prefix='/1.0')
 
 from app.web import auth, book, drift, gift, main, wish

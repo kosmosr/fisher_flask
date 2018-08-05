@@ -1,8 +1,8 @@
 from flask import flash, redirect, url_for, render_template, request
-from flask_login import login_required, current_user
+from flask_login import current_user
 from sqlalchemy import or_, desc
 
-from app.const.enums import PendingStatus
+from app.common.enums import PendingStatus
 from app.forms.book import DriftForm
 from app.models.drift import Drift
 from app.models.gift import Gift
@@ -11,13 +11,12 @@ from app.models.wish import Wish
 from app.view.book import BookViewModel
 from app.view.drift import DriftCollection
 from ext.db import db
-from . import web
+from . import api_v1
 
 __author__ = '七月'
 
 
-@web.route('/drift/<int:gid>', methods=['GET', 'POST'])
-@login_required
+@api_v1.route('/drift/<int:gid>', methods=['GET', 'POST'])
 def send_drift(gid):
     current_gift = Gift.query.get_or_404(gid)
     if current_gift.is_yourself_gift(current_user.id):
@@ -35,8 +34,7 @@ def send_drift(gid):
     return render_template('drift.html', gifter=user_from_gift.summary, user_beans=current_user.beans, form=form)
 
 
-@web.route('/pending')
-@login_required
+@api_v1.route('/pending')
 def pending():
     drifts = Drift.query.filter(or_(Drift.requester_id == current_user.id,
                                     Drift.gifter_id == current_user.id)).order_by(desc(Drift.create_time)).all()
@@ -44,8 +42,7 @@ def pending():
     return render_template('pending.html', drifts=views.data)
 
 
-@web.route('/drift/<int:did>/reject')
-@login_required
+@api_v1.route('/drift/<int:did>/reject')
 def reject_drift(did):
     """
     拒绝
@@ -60,8 +57,7 @@ def reject_drift(did):
     return redirect(url_for('web.pending'))
 
 
-@web.route('/drift/<int:did>/redraw')
-@login_required
+@api_v1.route('/drift/<int:did>/redraw')
 def redraw_drift(did):
     """
     撤销
@@ -75,8 +71,7 @@ def redraw_drift(did):
     return redirect(url_for('web.pending'))
 
 
-@web.route('/drift/<int:did>/mailed')
-@login_required
+@api_v1.route('/drift/<int:did>/mailed')
 def mailed_drift(did):
     """
     邮寄
