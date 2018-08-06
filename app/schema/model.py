@@ -4,8 +4,9 @@
 @author: zmh
 @time: 2018/8/6 15:57
 """
+from datetime import datetime
 
-from marshmallow import Schema, fields, pre_load, post_load
+from marshmallow import Schema, fields, pre_load, post_load, post_dump
 
 from app import Book
 
@@ -34,3 +35,8 @@ class BookSchema(Schema):
     @post_load
     def make_entity(self, data):
         return Book(**data)
+
+    @post_dump
+    def fill_pubdate(self, data):
+        data['pubdate'] = datetime.strptime(data['pubdate'], '%Y-%m-%d').date().strftime('%Y-%m')
+        return data

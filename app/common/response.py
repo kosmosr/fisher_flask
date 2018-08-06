@@ -11,10 +11,11 @@ from app.common.httpcode import HttpCode, ErrorCode
 
 
 class SuccessResponse:
-    def __init__(self, http_code: HttpCode, data='', pagination=False):
+    def __init__(self, http_code: HttpCode, data='', pagination=None, other=None):
         self.code = http_code.http_code
         self.data = data
         self.pagination = pagination
+        self.other = other
 
     def make(self):
         if not self.pagination:
@@ -22,8 +23,10 @@ class SuccessResponse:
         else:
             dict = {
                 'data': self.data,
-                'meta': {'pagination': self.data}
+                'meta': {'pagination': self.pagination}
             }
+            if self.other:
+                dict['meta'].update(self.other)
             return make_response(jsonify(dict), self.code)
 
 
