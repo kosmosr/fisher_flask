@@ -5,14 +5,16 @@
 @time: 2018/5/28 13:53
 """
 
-from flask import request, render_template, flash
+from flask import request, render_template
 from flask_login import current_user
 
+from app.common.httpcode import OK
+from app.common.response import SuccessResponse
 from app.forms.book import BookForm
 from app.models.gift import Gift
 from app.models.wish import Wish
 from app.spiders.yushu_book import YuShuBook
-from app.view.book import BookCollection, BookViewModel
+from app.view.book import BookViewModel
 from app.view.trade import TradeInfo
 from app.web import api_v1
 from utils.common import is_isbn_or_key
@@ -21,7 +23,6 @@ from utils.common import is_isbn_or_key
 @api_v1.route('/book/search', methods=['GET'])
 def search():
     form = BookForm(request.args)
-    books = BookCollection()
 
     if form.validate():
         keyword = form.keyword.data
@@ -30,17 +31,9 @@ def search():
 
         if is_isbn_or_key(keyword):
             yushu_book.search_by_keyword(keyword, page)
-            books.fill_data(keyword, yushu_book)
         else:
             yushu_book.search_by_isbn(keyword)
-            books.fill_data(keyword, yushu_book)
-        # return current_app.response_class(
-        #     (json.dumps(books, ensure_ascii=False, default=lambda o: o.__dict__)),
-        #     mimetype=current_app.config['JSONIFY_MIMETYPE']
-        # )
-    else:
-        flash('搜索的关键字不符合要求，请重新输入关键字')
-    return render_template('search_result.html', books=books)
+        return SuccessResponse(OK, data=yushu_book.books).make()
 
 
 @api_v1.route('/book/<isbn>/detail')

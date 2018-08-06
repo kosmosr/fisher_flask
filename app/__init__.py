@@ -7,6 +7,7 @@
 
 from flask import Flask
 
+from app.interceptor import before_request
 from app.interceptor.error import default_handler
 from app.models.book import Book
 from config import config
@@ -16,7 +17,6 @@ from ext.db import db
 
 def create_app(app: Flask):
     app.config.from_object(config)
-    # app.register_error_handler(Exception, default_handler)
     register_blueprint(app)
 
     login_manager.init_app(app)

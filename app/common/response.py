@@ -4,16 +4,15 @@
 @contact: zmhwft@gmail.com
 @time: 2018/8/5 20:20
 """
-import string
 
 from flask import make_response, jsonify
 
-from app.common.httpcode import HttpCode
+from app.common.httpcode import HttpCode, ErrorCode
 
 
 class SuccessResponse:
     def __init__(self, http_code: HttpCode, data='', pagination=False):
-        self.code = http_code.code
+        self.code = http_code.http_code
         self.data = data
         self.pagination = pagination
 
@@ -29,10 +28,10 @@ class SuccessResponse:
 
 
 class ErrorResponse:
-    def __init__(self, http_code: int, msg: string, code=None):
-        self.http_code = http_code
-        self.code = code
-        self.message = msg
+    def __init__(self, error_code: ErrorCode):
+        self.http_code = error_code.http_code
+        self.code = error_code.code
+        self.message = error_code.message
 
     def make(self):
         dict = {

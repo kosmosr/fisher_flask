@@ -30,7 +30,10 @@ class DevelopmentConfig:
     REDIS_URL = "redis://10.10.76.1:16379/0"
 
     # EXPIRES TIME
+    # 3 hours
     RESET_TOKEN_EXPIRE_TIME = 60 * 60 * 3
+    # 1 day
+    LOGIN_TOKEN_EXPIRE_TIME = 60 * 60 * 24
 
 
 class ProductionConfig:

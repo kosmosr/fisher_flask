@@ -1,17 +1,16 @@
-from flask import render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user
+from flask import render_template, request, redirect, url_for, flash, g
 
 from app import db
-from app.common.const import TOKEN_INVALID
-from app.common.httpcode import CREATED
-from app.common.redis_key import reset_password_token_key
-from app.common.response import SuccessResponse
-from app.forms.auth import LoginForm, BaseForm, ResetPasswordForm
+from app.common.const import TOKEN_INVALID, USER_NOT_EXIST, USER_PASSWORD_ERROR, REQUEST_USER_ID
+from app.common.httpcode import CREATED, OK, NotContent, Unauthorized
+from app.common.redis_key import reset_password_token_key, login_token_key
+from app.common.response import SuccessResponse, ErrorResponse
+from app.forms.auth import BaseForm, ResetPasswordForm
 from app.models.user import User
-from app.schema.validate import RegisterValSchema
+from app.schema.validate import RegisterValSchema, LoginValSchema
 from config import config
 from ext.redis import redis
-from utils.common import encode_token, decode_token, check_token
+from utils.common import decode_token, check_token, generate_token
 from utils.email import send_email
 from . import api_v1
 
@@ -30,21 +29,20 @@ def register():
     return SuccessResponse(CREATED).make()
 
 
-@api_v1.route('/login', methods=['GET', 'POST'])
+# 登录
+@api_v1.route('/auth', methods=['POST'])
 def login():
-    form = LoginForm(request.form)
-    if request.method == 'POST' and form.validate():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user)
-            next = request.args.get('next')
-            if not next or not next.startswith('/'):
-                next = url_for('web.index')
-            return redirect(next)
-        else:
-            flash('账户不存在或者密码错误')
-    return render_template('auth/login.html', form=form)
-    pass
+    schema = LoginValSchema(strict=True).load(request.get_json())
+    data = schema.data
+    user = User.query.filter_by(email=data['email']).first()
+    if not user:
+        return ErrorResponse(USER_NOT_EXIST).make()
+    if user.check_password(data['password']):
+        token = generate_token(user.id, login_token_key, config.LOGIN_TOKEN_EXPIRE_TIME)
+        data = {'token': token}
+        return SuccessResponse(OK, data=data).make()
+    else:
+        return ErrorResponse(USER_PASSWORD_ERROR).make()
 
 
 @api_v1.route('/reset/password', methods=['GET', 'POST'])
@@ -55,9 +53,7 @@ def forget_password_request():
             email = form.email.data
             user = User.query.filter_by(email=email).first_or_404()
             if user:
-                token = encode_token(user.id)
-                redis_key = reset_password_token_key.format(user.id)
-                redis.setex(redis_key, token, time=config.RESET_TOKEN_EXPIRE_TIME)
+                token = generate_token(user.id, reset_password_token_key, config.RESET_TOKEN_EXPIRE_TIME)
                 send_email(form.email.data, '重置你的密码', 'email/reset_password.html', user=user, token=token)
                 flash('一封邮件已发送到邮件' + email + ', 请及时查收')
                 return redirect(url_for('web.login'))
@@ -85,7 +81,13 @@ def change_password():
     pass
 
 
-@api_v1.route('/logout')
+# 注销
+@api_v1.route('/users', methods=['DELETE'])
 def logout():
-    logout_user()
-    return redirect(url_for('web.index'))
+    uid = getattr(g, REQUEST_USER_ID, None)
+    if uid:
+        key = login_token_key.format(uid)
+        redis.delete(key)
+        return SuccessResponse(NotContent).make()
+    else:
+        return ErrorResponse(Unauthorized).make()

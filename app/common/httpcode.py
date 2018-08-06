@@ -8,18 +8,19 @@
 
 class HttpCode:
     def __init__(self, code: int):
-        self.code = code
+        self.http_code = code
 
 
 class ErrorCode(HttpCode):
-    def __init__(self, http_code, code: str, message=None):
-        super(ErrorCode, self).__init__(http_code)
+    def __init__(self, http, code: str = None, message: str = None):
+        super(ErrorCode, self).__init__(http)
         self.code = code
         self.message = message
 
 
 OK = HttpCode(200)
 CREATED = HttpCode(201)
+NotContent = HttpCode(204)
 # 客户端错误 4xx
 # 请求语法格式错误、无效的请求、无效的签名
 BadRequest = HttpCode(400)

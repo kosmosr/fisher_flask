@@ -8,7 +8,16 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_mail import Mail
 
-app = Flask('app')
+app = Flask(__name__)
+
+# @app.before_request
+# def before_request():
+#     token = request.headers['token']
+#     if token:
+#         payload = decode_token(token)
+#         setattr(g, REQUEST_USER_ID, payload['uid'])
+
+
 mail = Mail()
 
 login_manager = LoginManager()

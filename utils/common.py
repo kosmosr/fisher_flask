@@ -6,9 +6,10 @@
 """
 from datetime import datetime, timedelta
 
-from config import config
-
 import jwt
+
+from config import config
+from ext.redis import redis
 
 
 def is_isbn_or_key(keyword: str):
@@ -37,6 +38,13 @@ def encode_token(uid):
 def decode_token(token):
     payload = jwt.decode(token, key=config.SECRET_KEY)
     return payload
+
+
+def generate_token(uid, key: str, expire_time: int):
+    token = encode_token(uid)
+    redis_key = key.format(uid)
+    redis.setex(redis_key, token, time=expire_time)
+    return token
 
 
 def check_token(token, token_from_redis, payload):
