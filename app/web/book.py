@@ -21,8 +21,11 @@ from utils.common import is_isbn_or_key
 
 
 @api_v1.route('/books', methods=['GET'])
-def search():
-    schema = BookSearchValSchema(strict=True).load(request.args)
+@api_v1.route('/books/<keyword>', methods=['GET'])
+def search(keyword=None):
+    dict = request.args.to_dict()
+    dict.update({'keyword': keyword})
+    schema = BookSearchValSchema(strict=True).load(dict)
     data = schema.data
     keyword = data['keyword']
     page = data['page']
@@ -30,7 +33,7 @@ def search():
     yushu_book = YuShuBook()
 
     if is_isbn_or_key(keyword):
-        yushu_book.search_by_keyword(keyword, page)
+        yushu_book.search_by_keyword(keyword, page, per_page)
     else:
         yushu_book.search_by_isbn(keyword)
     pagination = {

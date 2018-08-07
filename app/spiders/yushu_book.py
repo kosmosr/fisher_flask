@@ -4,7 +4,13 @@
 @author: zmh
 @time: 2018/5/22 16:30
 """
+import time
+from threading import Thread
+
+from flask import current_app
+
 from app import Book
+from app.log import logger
 from app.schema.model import BookSchema
 from ext.db import db
 from utils.httper import HTTP
@@ -24,8 +30,17 @@ class YuShuBook:
         return self.books[0] if self.total >= 1 else None
 
     def search_by_keyword(self, keyword, start, count=10):
-        url = self.keyword_url.format(keyword, count, self.cal_start(start))
+        url = self.keyword_url.format(keyword, count, YuShuBook.cal_start(start))
         data = HTTP.get(url)
+        schema = BookSchema(many=True)
+        result = schema.load(data['books']).data
+        dumps = schema.dump(result).data
+        isbns = [book['isbn'] for book in data['books']]
+        # 持久化
+        app = current_app._get_current_object()
+        load_data_thread = Thread(target=load_data, name='load_data', args=[app, data, isbns])
+        load_data_thread.start()
+        data['books'] = dumps
         self.__fill_collection(data)
 
     def search_by_isbn(self, isbn):
@@ -50,12 +65,22 @@ class YuShuBook:
         self.total = data['total']
         self.books = data['books']
 
-    def cal_start(self, page):
+    @staticmethod
+    def cal_start(page):
         return (page - 1) * 10
 
 
-if __name__ == '__main__':
-    yushu_book = YuShuBook()
-    # yushu_book.search_by_keyword('鲁迅', start=32, count=20)
-    yushu_book.search_by_isbn('9787115207012')
-    print(yushu_book.books)
+def load_data(app, data, isbns):
+    with app.app_context():
+        starttime = time.time()
+        book_isbns = [result[0] for result in Book.query.filter(Book.isbn.in_(isbns)).with_entities(Book.isbn).all()]
+        different = list(set(isbns).difference(set(book_isbns)))
+        book_data = [book for book in data['books'] if book['isbn'] in different]
+        schema = BookSchema(strict=True)
+        for book in book_data:
+            result = schema.load(book)
+            entity = result.data
+            db.session.add(entity)
+        db.session.commit()
+        endtime = time.time()
+        logger.info(f'关键字持久化耗时: {(endtime-starttime)}s')

@@ -27,9 +27,30 @@ class BookSchema(Schema):
     def fill_data(self, data):
         for k, v in data.items():
             if data[k] is None:
-                data[k] = ''
-        data['price'] = data['price'].split('元')[0]
-        data['author'] = ','.join(data['author'])
+                keys = self.fields.keys()
+                if k in keys:
+                    if hasattr(self.fields[k], 'num_type'):
+                        types = self.fields[k].num_type
+                    else:
+                        types = str
+                    if not isinstance(data[k], types):
+                        if hasattr(self.fields[k], 'num_type'):
+                            data[k] = 0
+                        else:
+                            data[k] = ''
+        if not isinstance(data['pages'], int):
+            data['pages'] = ''.join(x for x in data['pages'] if ord(x) < 256)
+        if not isinstance(data['price'], int):
+            data['price'] = data['price'].split('元')[0]
+        if isinstance(data['author'], list):
+            data['author'] = ','.join(data['author'])
+        for x in data['pubdate']:
+            if ord(x) > 256:
+                raw = ''.join(x for x in data['pubdate'] if ord(x) < 256)
+                year = raw[:4]
+                month = raw[4:5]
+                day = raw[5:6]
+                data['pubdate'] = '-'.join([year, month, day])
         return data
 
     @post_load
