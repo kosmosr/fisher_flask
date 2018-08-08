@@ -5,7 +5,7 @@
 @time: 2018/6/26 13:43
 """
 
-from sqlalchemy import Column, Integer, String, Date, Text, Numeric
+from sqlalchemy import Column, Integer, String
 
 from ext.db import db
 
@@ -21,14 +21,14 @@ class Book(db.Model):
     # 出版社
     publisher = Column(String(50))
     # 页数
-    pages = Column(Integer)
+    pages = Column(String(20))
     # 价格
-    price = Column(Numeric(8, 2))
+    price = Column(String(20))
     # 出版日期
-    pubdate = Column(Date)
+    pubdate = Column(String(20))
     # isbn码 唯一
     isbn = Column(String(15), nullable=False, unique=True)
     # 简介
-    summary = Column(Text)
+    summary = Column(String(1000))
     # 图片
     image = Column(String(50))

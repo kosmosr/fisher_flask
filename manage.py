@@ -11,20 +11,15 @@
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 
-from app import db
-from run import app
+from ext.db import db
+from run import server
 
 # 导入需要迁移的数据库模型
-from app.models.book import Book
-from app.models.user import User
-from app.models.gift import Gift
-from app.models.wish import Wish
-from app.models.drift import Drift
 # 让python支持命令行工作
-manager = Manager(app)
+manager = Manager(server)
 
 # 使用migrate绑定app和db
-migrate = Migrate(app, db)
+migrate = Migrate(server, db)
 
 # 添加迁移脚本的命令到manager中
 manager.add_command('db', MigrateCommand)

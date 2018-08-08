@@ -4,6 +4,7 @@
 @author: zmh
 @time: 2018/5/22 15:57
 """
+import hashlib
 from datetime import datetime, timedelta
 
 import jwt
@@ -60,3 +61,16 @@ def check_token(token, token_from_redis, payload):
         return True
     else:
         return False
+
+
+def md5_n(data: str, n: int = 1) -> str:
+    if n == 0:
+        return data
+    else:
+        md5 = hashlib.md5()
+        md5.update(data.encode())
+        return md5_n(md5.hexdigest(), n - 1)
+
+
+def bytes_to_dict(data: bytes) -> dict:
+    return eval(str(data, encoding='utf-8'))

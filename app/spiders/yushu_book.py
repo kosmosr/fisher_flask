@@ -5,13 +5,11 @@
 @time: 2018/5/22 16:30
 """
 import time
-from threading import Thread
-
-from flask import current_app
 
 from app import Book
 from app.log import logger
 from app.schema.model import BookSchema
+from app.service.book import BookCacheService
 from ext.db import db
 from utils.httper import HTTP
 
@@ -21,49 +19,50 @@ class YuShuBook:
     keyword_url = 'http://t.yushu.im/v2/book/search?q={}&count={}&start={}'
     isbn_url = 'http://t.yushu.im/v2/book/isbn/{}'
 
-    def __init__(self):
+    def __init__(self, md5_params):
         self.total = 0
         self.books = []
+        self.md5_params = md5_params
+        self.book_service = BookCacheService(self.md5_params)
 
     @property
     def first(self):
         return self.books[0] if self.total >= 1 else None
 
     def search_by_keyword(self, keyword, start, count=10):
-        url = self.keyword_url.format(keyword, count, YuShuBook.cal_start(start))
-        data = HTTP.get(url)
         schema = BookSchema(many=True)
-        result = schema.load(data['books']).data
-        dumps = schema.dump(result).data
-        isbns = [book['isbn'] for book in data['books']]
-        # 持久化
-        app = current_app._get_current_object()
-        load_data_thread = Thread(target=load_data, name='load_data', args=[app, data, isbns])
-        load_data_thread.start()
-        data['books'] = dumps
-        self.__fill_collection(data)
+        if self.book_service.data_exist_redis():
+            data = self.book_service.data
+            self.__fill_collection(data['total'], data)
+        else:
+            url = self.keyword_url.format(keyword, count, YuShuBook.cal_start(start))
+            data = HTTP.get(url)
+            dumps = schema.dump(data['books']).data
+            books = {'books': dumps, 'total': data['total']}
+            # TODO: 异步
+            self.book_service.save_data(books, True)
+            self.__fill_collection(data['total'], dumps)
 
     def search_by_isbn(self, isbn):
-        book = Book.query.filter(Book.isbn == isbn).first()
         schema = BookSchema()
-        if not book:
+        if self.book_service.data_exist_redis():
+            data = self.book_service.data
+            self.__fill_single(data)
+        else:
             url = self.isbn_url.format(isbn)
             data = HTTP.get(url)
-            book = schema.load(data).data
-            with db.auto_commit():
-                db.session.add(book)
-            self.__fill_single(schema.dump(book).data)
-        else:
-            self.__fill_single(schema.dump(book).data)
+            self.book_service.save_data(data)
+            dumps = schema.dump(data).data
+            self.__fill_single(dumps)
 
     def __fill_single(self, data):
         if data:
             self.total = 1
             self.books.append(data)
 
-    def __fill_collection(self, data):
-        self.total = data['total']
-        self.books = data['books']
+    def __fill_collection(self, total: int, books: list):
+        self.total = total
+        self.books = books
 
     @staticmethod
     def cal_start(page):

@@ -8,3 +8,5 @@
 reset_password_token_key = "user:reset_password_token:{}"
 
 login_token_key = "user:login_token:{}"
+
+book_cache_key = "books:cache:params:{}"

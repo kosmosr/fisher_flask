@@ -17,12 +17,11 @@ from app.spiders.yushu_book import YuShuBook
 from app.view.book import BookViewModel
 from app.view.trade import TradeInfo
 from app.web import api_v1
-from utils.common import is_isbn_or_key
+from utils.common import is_isbn_or_key, md5_n
 
 
-@api_v1.route('/books', methods=['GET'])
 @api_v1.route('/books/<keyword>', methods=['GET'])
-def search(keyword=None):
+def search(keyword):
     dict = request.args.to_dict()
     dict.update({'keyword': keyword})
     schema = BookSearchValSchema(strict=True).load(dict)
@@ -30,8 +29,9 @@ def search(keyword=None):
     keyword = data['keyword']
     page = data['page']
     per_page = data['per_page']
-    yushu_book = YuShuBook()
+    md5_params = md5_n(keyword + str(page) + str(per_page))
 
+    yushu_book = YuShuBook(md5_params)
     if is_isbn_or_key(keyword):
         yushu_book.search_by_keyword(keyword, page, per_page)
     else:
@@ -41,8 +41,7 @@ def search(keyword=None):
         'current_page': page,
         'per_page': per_page
     }
-    other = {'keyword': keyword}
-    return SuccessResponse(OK, data=yushu_book.books, pagination=pagination, other=other).make()
+    return SuccessResponse(OK, data=yushu_book.books, pagination=pagination).make()
 
 
 @api_v1.route('/book/<isbn>/detail')

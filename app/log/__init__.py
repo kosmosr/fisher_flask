@@ -6,10 +6,11 @@
 """
 import logging
 
-logger = logging.getLogger()
+logger = logging.getLogger('fisher')
 logger.setLevel(logging.DEBUG)
 
-console_formater = logging.Formatter("%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s")
+console_formater = logging.Formatter(
+    ":%(asctime)s %(funcName)s:%(lineno)d %(filename)s - %(name)s %(levelname)s - %(message)s")
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
 console_handler.setFormatter(console_formater)

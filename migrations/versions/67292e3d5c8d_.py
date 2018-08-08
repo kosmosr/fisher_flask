@@ -1,15 +1,15 @@
 """empty message
 
-Revision ID: 2ef65b457c1d
+Revision ID: 67292e3d5c8d
 Revises: 
-Create Date: 2018-08-05 00:30:02.594424
+Create Date: 2018-08-08 15:00:50.068317
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = '2ef65b457c1d'
+revision = '67292e3d5c8d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,18 +23,16 @@ def upgrade():
                     sa.Column('author', sa.String(length=30), server_default='未名', nullable=True),
                     sa.Column('binding', sa.String(length=20), nullable=True),
                     sa.Column('publisher', sa.String(length=50), nullable=True),
-                    sa.Column('pages', sa.Integer(), nullable=True),
-                    sa.Column('price', sa.Numeric(precision=8, scale=2), nullable=True),
-                    sa.Column('pubdate', sa.Date(), nullable=True),
+                    sa.Column('pages', sa.String(length=20), nullable=True),
+                    sa.Column('price', sa.String(length=20), nullable=True),
+                    sa.Column('pubdate', sa.String(length=20), nullable=True),
                     sa.Column('isbn', sa.String(length=15), nullable=False),
-                    sa.Column('summary', sa.Text(), nullable=True),
+                    sa.Column('summary', sa.String(length=1000), nullable=True),
                     sa.Column('image', sa.String(length=50), nullable=True),
                     sa.PrimaryKeyConstraint('id'),
                     sa.UniqueConstraint('isbn')
                     )
     op.create_table('drift',
-                    sa.Column('is_deleted', sa.Boolean(), nullable=True),
-                    sa.Column('create_time', sa.DateTime(), nullable=True),
                     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
                     sa.Column('recipient_name', sa.String(length=20), nullable=False),
                     sa.Column('address', sa.String(length=100), nullable=False),
@@ -50,20 +48,20 @@ def upgrade():
                     sa.Column('gifter_id', sa.Integer(), nullable=True),
                     sa.Column('gifter_nickname', sa.String(length=20), nullable=True),
                     sa.Column('pending', sa.SmallInteger(), nullable=True),
+                    sa.Column('is_deleted', sa.Boolean(), nullable=True),
+                    sa.Column('create_time', sa.DateTime(), nullable=True),
                     sa.PrimaryKeyConstraint('id')
                     )
     op.create_table('gift',
-                    sa.Column('is_deleted', sa.Boolean(), nullable=True),
-                    sa.Column('create_time', sa.DateTime(), nullable=True),
                     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
                     sa.Column('user_id', sa.Integer(), nullable=False),
                     sa.Column('isbn', sa.String(length=15), nullable=False),
                     sa.Column('launched', sa.Boolean(), nullable=True),
+                    sa.Column('is_deleted', sa.Boolean(), nullable=True),
+                    sa.Column('create_time', sa.DateTime(), nullable=True),
                     sa.PrimaryKeyConstraint('id')
                     )
     op.create_table('user',
-                    sa.Column('is_deleted', sa.Boolean(), nullable=True),
-                    sa.Column('create_time', sa.DateTime(), nullable=True),
                     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
                     sa.Column('nickname', sa.String(length=24), nullable=False),
                     sa.Column('phone_number', sa.String(length=18), nullable=True),
@@ -75,6 +73,8 @@ def upgrade():
                     sa.Column('wx_open_id', sa.String(length=50), nullable=True),
                     sa.Column('wx_name', sa.String(length=32), nullable=True),
                     sa.Column('update_time', sa.DateTime(), nullable=True),
+                    sa.Column('is_deleted', sa.Boolean(), nullable=True),
+                    sa.Column('create_time', sa.DateTime(), nullable=True),
                     sa.PrimaryKeyConstraint('id'),
                     sa.UniqueConstraint('email'),
                     sa.UniqueConstraint('phone_number')
