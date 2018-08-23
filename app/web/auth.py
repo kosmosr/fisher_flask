@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, g
 
 from app import db
-from app.common.const import TOKEN_INVALID, USER_NOT_EXIST, USER_PASSWORD_ERROR, REQUEST_USER_ID
+from app.common.const import USER_NOT_EXIST, USER_PASSWORD_ERROR, REQUEST_USER_ID, TOKEN_INVALID
 from app.common.httpcode import CREATED, OK, NotContent, Unauthorized
 from app.common.redis_key import reset_password_token_key, login_token_key
 from app.common.response import SuccessResponse, ErrorResponse
@@ -68,11 +68,11 @@ def forget_password(token):
         # 验证token一致性
         redis_key = reset_password_token_key.format(payload['uid'])
         token_from_redis = redis.get(redis_key)
-        if check_token(token, token_from_redis, payload):
+        if check_token(token, token_from_redis):
             User.reset_password(payload['uid'], form.password1.data)
             return redirect(url_for('web.index'))
         else:
-            flash(TOKEN_INVALID)
+            return ErrorResponse(TOKEN_INVALID).make()
     return render_template('auth/forget_password.html', form=form)
 
 

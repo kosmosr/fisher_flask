@@ -39,3 +39,10 @@ class PendingStatus(IntEnum):
             }
         }
         return key_map[status][key]
+
+
+class BookUpdateStatus(IntEnum):
+    # 未处理 默认
+    UNTREATED = 0
+    # 已处理
+    FINISHED = 1

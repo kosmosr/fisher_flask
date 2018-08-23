@@ -5,7 +5,7 @@
 @time: 2018/5/22 15:57
 """
 import hashlib
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import jwt
 
@@ -48,16 +48,14 @@ def generate_token(uid, key: str, expire_time: int):
     return token
 
 
-def check_token(token, token_from_redis, payload):
+def check_token(token, token_from_redis):
     """
     检验token有效性
     :param token:
     :param token_from_redis:
-    :param payload:
     :return:
     """
-    if token_from_redis and token_from_redis.decode() == token and datetime.fromtimestamp(
-            payload['timestamp']) + timedelta(seconds=config.RESET_TOKEN_EXPIRE_TIME) > datetime.now():
+    if token_from_redis and token_from_redis.decode() == token:
         return True
     else:
         return False

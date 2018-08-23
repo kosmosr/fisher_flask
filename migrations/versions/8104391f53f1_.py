@@ -1,15 +1,15 @@
 """empty message
 
-Revision ID: 67292e3d5c8d
+Revision ID: 8104391f53f1
 Revises: 
-Create Date: 2018-08-08 15:00:50.068317
+Create Date: 2018-08-09 10:21:12.475658
 
 """
 import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = '67292e3d5c8d'
+revision = '8104391f53f1'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,10 +27,18 @@ def upgrade():
                     sa.Column('price', sa.String(length=20), nullable=True),
                     sa.Column('pubdate', sa.String(length=20), nullable=True),
                     sa.Column('isbn', sa.String(length=15), nullable=False),
-                    sa.Column('summary', sa.String(length=1000), nullable=True),
+                    sa.Column('summary', sa.Text(length=1000), nullable=True),
                     sa.Column('image', sa.String(length=50), nullable=True),
                     sa.PrimaryKeyConstraint('id'),
                     sa.UniqueConstraint('isbn')
+                    )
+    op.create_table('book_update',
+                    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+                    sa.Column('isbn', sa.String(length=15), nullable=False),
+                    sa.Column('status', sa.Integer(), nullable=True),
+                    sa.Column('before_data', sa.Text(length=1000), nullable=True),
+                    sa.Column('after_data', sa.Text(length=1000), nullable=True),
+                    sa.PrimaryKeyConstraint('id')
                     )
     op.create_table('drift',
                     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
@@ -80,12 +88,12 @@ def upgrade():
                     sa.UniqueConstraint('phone_number')
                     )
     op.create_table('wish',
-                    sa.Column('is_deleted', sa.Boolean(), nullable=True),
-                    sa.Column('create_time', sa.DateTime(), nullable=True),
                     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
                     sa.Column('user_id', sa.Integer(), nullable=False),
                     sa.Column('isbn', sa.String(length=15), nullable=False),
                     sa.Column('launched', sa.Boolean(), nullable=True),
+                    sa.Column('is_deleted', sa.Boolean(), nullable=True),
+                    sa.Column('create_time', sa.DateTime(), nullable=True),
                     sa.PrimaryKeyConstraint('id')
                     )
     # ### end Alembic commands ###
@@ -97,5 +105,6 @@ def downgrade():
     op.drop_table('user')
     op.drop_table('gift')
     op.drop_table('drift')
+    op.drop_table('book_update')
     op.drop_table('book')
     # ### end Alembic commands ###

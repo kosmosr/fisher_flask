@@ -8,9 +8,9 @@ from typing import List
 
 from sqlalchemy import Column, Integer, Boolean, String, desc, func
 
-from ext.db import db
 from app.models.base import Base
 from app.spiders.yushu_book import YuShuBook
+from ext.db import db
 
 
 class Gift(Base):
@@ -44,11 +44,9 @@ class Gift(Base):
     def recent(cls):
         recent_gifts = Gift.query \
             .filter_by(launched=False) \
-            .group_by(Gift.isbn) \
             .order_by(Gift.create_time) \
             .limit(30) \
             .distinct() \
-            .with_entities(Gift) \
             .all()
         return recent_gifts
 

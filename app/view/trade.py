@@ -4,6 +4,7 @@
 @author: zmh
 @time: 2018/7/10 10:33
 """
+
 from app.models.user import User
 
 
@@ -17,7 +18,8 @@ class TradeInfo:
         self.total = len(goods)
         self.trades = [self.__map_to_trade(trade) for trade in goods]
 
-    def __map_to_trade(self, single):
+    @staticmethod
+    def __map_to_trade(single):
         return {
             'user_name': User.query.filter_by(id=single.user_id).first().nickname,
             'time': single.create_time.strftime('%Y-%m-%d'),

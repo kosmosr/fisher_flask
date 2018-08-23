@@ -6,9 +6,11 @@
 """
 
 from flask import Flask
+from flask_cors import CORS
 
+from app.interceptor import after_request
 from app.interceptor import before_request
-from app.interceptor.error import default_handler
+from app.interceptor import error
 from app.models.book import Book
 from config import config
 from ext import login_manager, mail
@@ -22,6 +24,7 @@ def create_app(app: Flask):
     login_manager.init_app(app)
     db.init_app(app)
     mail.init_app(app)
+    CORS(app)
     return app
 
 

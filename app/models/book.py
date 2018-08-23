@@ -5,7 +5,7 @@
 @time: 2018/6/26 13:43
 """
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Text
 
 from ext.db import db
 
@@ -29,6 +29,6 @@ class Book(db.Model):
     # isbn码 唯一
     isbn = Column(String(15), nullable=False, unique=True)
     # 简介
-    summary = Column(String(1000))
+    summary = Column(Text(1000))
     # 图片
     image = Column(String(50))

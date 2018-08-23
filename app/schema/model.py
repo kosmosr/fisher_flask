@@ -29,6 +29,8 @@ class BookSchema(Schema):
         for k, _ in data.items():
             if data[k] is None:
                 data[k] = ''
+            if k == 'summary':
+                data[k] = data[k].replace('\\n', '<br/>')
         return data
 
     @post_load
