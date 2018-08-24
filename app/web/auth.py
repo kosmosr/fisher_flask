@@ -39,7 +39,7 @@ def login():
         return ErrorResponse(USER_NOT_EXIST).make()
     if user.check_password(data['password']):
         token = generate_token(user.id, login_token_key, config.LOGIN_TOKEN_EXPIRE_TIME)
-        data = {'token': token}
+        data = {'token': token, 'nickname': user.nickname}
         return SuccessResponse(OK, data=data).make()
     else:
         return ErrorResponse(USER_PASSWORD_ERROR).make()

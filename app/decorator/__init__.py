@@ -6,23 +6,15 @@
 """
 from functools import wraps
 
-from flask import g
-
-from app.common import const
-from app.common.const import NOT_LOGIN, USER_NOT_EXIST
-from app.common.response import ErrorResponse
-from app.models.user import User
+from app.common.redis_key import login_url_key
+from ext.redis import redis
 
 
 def login_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        uid = getattr(g, const.REQUEST_USER_ID, None)
-        if not uid:
-            return ErrorResponse(NOT_LOGIN).make()
-        user = User.query.filter(User.id == uid, User.is_deleted == False).first()
-        if not user:
-            return ErrorResponse(USER_NOT_EXIST).make()
-        return func(*args, **kwargs)
+        redis.delete(login_url_key)
+        redis.sadd(login_url_key, func.__name__)
+        return func
 
-    return wrapper
+    return wrapper()

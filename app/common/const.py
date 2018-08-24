@@ -17,6 +17,7 @@ VALIDATE_PASSWORD_ERROR = '密码不可以为空或者至少需要6个字符'
 # 400
 VALIDATE_ERROR = ErrorCode(BadRequest.http_code, '01', '校验错误')
 USER_PASSWORD_ERROR = ErrorCode(BadRequest.http_code, '02', '密码错误')
+SAVE_BOOK_ERROR = ErrorCode(BadRequest.http_code, '03', '这本书已添加至你的赠书清单或已存在你的心愿清单，请不要重复添加')
 
 # 401
 NOT_LOGIN = ErrorCode(Unauthorized.http_code, '01', '当前未登录')

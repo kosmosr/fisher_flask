@@ -1,8 +1,12 @@
+from decimal import *
+
 from flask import flash, redirect, url_for, render_template, g
 from flask_login import current_user
 
-from app.common.const import REQUEST_USER_ID
+from app.common.const import REQUEST_USER_ID, SAVE_BOOK_ERROR
 from app.common.enums import PendingStatus
+from app.common.httpcode import OK
+from app.common.response import SuccessResponse, ErrorResponse
 from app.decorator import login_required
 from app.models.drift import Drift
 from app.models.gift import Gift
@@ -23,8 +27,8 @@ def my_gifts():
     return render_template('my_gifts.html', gifts=view.gifts)
 
 
-@api_v1.route('/gifts/<isbn>')
 @login_required
+@api_v1.route('/gifts/<isbn>', methods=['GET'])
 def save_to_gifts(isbn):
     uid = getattr(g, REQUEST_USER_ID)
     user = User.query.get(uid)
@@ -32,20 +36,12 @@ def save_to_gifts(isbn):
         with db.auto_commit():
             gift = Gift()
             gift.isbn = isbn
-            gift.user_id = current_user.id
-            current_user.beans += 0.5
-            db.session.add(gift)
-
-    if current_user.can_save_to_list(isbn):
-        with db.auto_commit():
-            gift = Gift()
-            gift.isbn = isbn
-            gift.user_id = current_user.id
-            current_user.beans += 0.5
+            gift.user_id = user.id
+            user.beans += Decimal(0.5).quantize(Decimal('0.00'))
             db.session.add(gift)
     else:
-        flash('这本书已添加至你的赠书清单或已存在你的心愿清单，请不要重复添加')
-    return redirect(url_for('web.book_detail', isbn=isbn))
+        return ErrorResponse(SAVE_BOOK_ERROR).make()
+    return SuccessResponse(OK).make()
 
 
 @api_v1.route('/gifts/<gid>/redraw')

@@ -9,6 +9,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from app.interceptor import after_request
+from app.interceptor import before_first_request
 from app.interceptor import before_request
 from app.interceptor import error
 from app.models.book import Book
