@@ -36,3 +36,21 @@ class BookSchema(Schema):
     @post_load
     def make_entity(self, data):
         return Book(**data)
+
+
+class UserSchema(Schema):
+    id = fields.Int()
+    # 昵称
+    nickname = fields.Str()
+    # 电话号码
+    phone_number = fields.Str()
+    # 邮箱
+    email = fields.Str()
+    password = fields.Str()
+    # 鱼豆
+    beans = fields.Str()
+    send_counter = fields.Str()
+    receive_counter = fields.Str()
+    wx_open_id = fields.Str()
+    wx_name = fields.Str()
+    update_time = fields.Str()

@@ -35,6 +35,9 @@ class DevelopmentConfig:
     # 1 day
     LOGIN_TOKEN_EXPIRE_TIME = 60 * 60 * 24
 
+    # RESET EMAIL URL
+    FRONT_RESET_EMAIL_URL = 'http://localhost:8081'
+
 
 class ProductionConfig:
     DEBUG = False

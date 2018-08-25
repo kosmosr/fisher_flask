@@ -10,6 +10,7 @@ from flask import request, g
 from app.common.const import REQUEST_USER_ID
 from app.common.httpcode import OK
 from app.common.response import SuccessResponse
+from app.decorator import can_login_url
 from app.models.gift import Gift
 from app.models.wish import Wish
 from app.schema.model import BookSchema
@@ -47,6 +48,7 @@ def search(keyword):
 
 
 @api_v1.route('/book/<isbn>', methods=['GET'])
+@can_login_url
 def book_detail(isbn):
     has_in_gifts = False
     has_in_wishes = False
@@ -58,9 +60,9 @@ def book_detail(isbn):
 
     uid = getattr(g, REQUEST_USER_ID, None)
     if uid:
-        if Gift.query.filter_by(user_id=uid, isbn=isbn, launched=False).first():
+        if Gift.query.filter_by(user_id=uid, isbn=isbn, launched=False, is_deleted=False).first():
             has_in_gifts = True
-        if Wish.query.filter_by(user_id=uid, isbn=isbn, launched=False).first():
+        if Wish.query.filter_by(user_id=uid, isbn=isbn, launched=False, is_deleted=False).first():
             has_in_wishes = True
 
     trade_gifts = Gift.query.filter_by(isbn=isbn, launched=False).all()

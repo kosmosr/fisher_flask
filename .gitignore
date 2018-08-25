@@ -150,4 +150,4 @@ pip-selfcheck.json
 .idea
 /test/
 /app/static/
-/app/templates/
+!/app/templates/email/reset_password.html

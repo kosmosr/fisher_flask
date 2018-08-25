@@ -4,10 +4,10 @@
 @author: zmh
 @time: 2018/8/2 16:47
 """
-from marshmallow import Schema, fields, validate, validates, ValidationError
+from marshmallow import Schema, fields, validate, validates, ValidationError, pre_load
 
 from app.common.const import VALIDATE_NICKNAME_ERROR, VALIDATE_PASSWORD_ERROR, VALIDATE_NICKNAME_EXIST, \
-    VALIDATE_EMAIL_EXIST
+    VALIDATE_EMAIL_EXIST, VALIDATE_RESERT_PASSWORD_ERROR
 from app.models.user import User
 
 
@@ -41,3 +41,28 @@ class RegisterValSchema(Schema):
         user = User.query.filter_by(email=value).first()
         if user:
             raise ValidationError(message=VALIDATE_EMAIL_EXIST)
+
+
+class ResetEmailValSchema(Schema):
+    email = fields.Str(required=True, validate=validate.Email())
+
+
+class ForgetPasswordValSchema(Schema):
+    password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR))
+    password2 = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR))
+
+    @pre_load
+    def pre_load(self, data):
+        if data['password2'] != data['password']:
+            raise ValidationError(message=VALIDATE_RESERT_PASSWORD_ERROR)
+
+
+class ChangePasswordValSchema(Schema):
+    old_password = fields.Str()
+    new_password = fields.Str()
+    confirm_password = fields.Str()
+
+    @pre_load
+    def pre_load(self, data):
+        if data['confirm_password'] != data['new_password']:
+            raise ValidationError(message=VALIDATE_RESERT_PASSWORD_ERROR)

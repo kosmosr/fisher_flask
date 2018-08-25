@@ -33,3 +33,10 @@ class BookDetailViewSchema(Schema):
     has_in_wishes = fields.Bool(default=False)
     wishes = fields.Nested(TradeModelSchema)
     gifts = fields.Nested(TradeModelSchema)
+
+
+class UserPersonalSchema(Schema):
+    nickname = fields.Str()
+    send_receive = fields.Str()
+    beans = fields.Str()
+    email = fields.Str()
