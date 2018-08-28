@@ -6,8 +6,7 @@
 """
 from flask import request, g
 
-from app.common.const import REQUEST_USER_ID, TOKEN_INVALID, USER_NOT_EXIST
-from app.common.httpcode import OK
+from app.common.const import REQUEST_USER_ID, TOKEN_INVALID, USER_NOT_EXIST, ENDPOINT_NOT_EXIST
 from app.common.redis_key import login_token_key, login_url_key
 from app.common.response import ErrorResponse, SuccessResponse
 from app.log import logger
@@ -20,12 +19,16 @@ from utils.common import decode_token, check_token
 @app.before_request
 def before_request():
     logger.debug("request ip: %s, path: %s, args: %s, body: %s", request.remote_addr, request.path, request.args,
-                 request.data)
+                 request.data.decode('utf-8'))
     if request.method == 'OPTIONS':
-        return SuccessResponse(OK).make()
+        return SuccessResponse()()
     login_urls = set([url.decode('utf-8') for url in redis.smembers(login_url_key)])
-    if request.endpoint.split('.')[-1] in login_urls:
-        return check_request_token()
+    try:
+        if request.endpoint.split('.')[-1] in login_urls:
+            return check_request_token()
+    except AttributeError as err:
+        logger.error(err)
+        return ErrorResponse(ENDPOINT_NOT_EXIST).make()
 
 
 def check_user_valid(uid):

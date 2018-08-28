@@ -14,7 +14,7 @@ from app.interceptor import before_request
 from app.interceptor import error
 from app.models.book import Book
 from config import config
-from ext import login_manager, mail
+from ext import mail
 from ext.db import db
 
 
@@ -22,7 +22,6 @@ def create_app(app: Flask):
     app.config.from_object(config)
     register_blueprint(app)
 
-    login_manager.init_app(app)
     db.init_app(app)
     mail.init_app(app)
     CORS(app)

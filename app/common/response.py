@@ -7,15 +7,25 @@
 
 from flask import make_response, jsonify
 
-from app.common.httpcode import HttpCode, ErrorCode
+from app.common.httpcode import HttpCode, ErrorCode, OK
 
 
+# 成功响应
 class SuccessResponse:
-    def __init__(self, http_code: HttpCode, data='', pagination=None, other=None):
+    def __init__(self, http_code: HttpCode = OK, data='', pagination=None, other=None):
+        """
+        :param http_code: 2xx 状态码 默认200
+        :param data: 返回列表时使用
+        :param pagination: 分页参数
+        :param other:
+        """
         self.code = http_code.http_code
         self.data = data
         self.pagination = pagination
         self.other = other
+
+    def __call__(self, *args, **kwargs):
+        return self.make()
 
     def make(self):
         if not self.pagination:
@@ -30,6 +40,7 @@ class SuccessResponse:
             return make_response(jsonify(dict), self.code)
 
 
+# 失败响应
 class ErrorResponse:
     def __init__(self, error_code: ErrorCode):
         self.http_code = error_code.http_code

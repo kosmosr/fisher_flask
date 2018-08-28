@@ -7,7 +7,6 @@
 import os
 
 from flask import Flask
-from flask_login import LoginManager
 from flask_mail import Mail
 
 from config import config
@@ -18,7 +17,3 @@ app.config['SQLALCHEMY_DATABASE_URI'] = config.SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 mail = Mail()
-
-login_manager = LoginManager()
-login_manager.login_view = 'web.login'
-login_manager.login_message = '请登录查看'

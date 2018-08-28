@@ -24,33 +24,14 @@ class BookSchema(Schema):
 
     @pre_dump
     def fill_data(self, data):
-        if isinstance(data['author'], list):
-            data['author'] = ','.join(data['author'])
-        for k, _ in data.items():
-            if data[k] is None:
-                data[k] = ''
-            if k == 'summary':
-                data[k] = data[k].replace('\\n', '<br/>')
-        return data
+        if not isinstance(data, Book):
+            if isinstance(data['author'], list):
+                data['author'] = ','.join(data['author'])
+            for k, _ in data.items():
+                if data[k] is None:
+                    data[k] = ''
+            return data
 
     @post_load
     def make_entity(self, data):
         return Book(**data)
-
-
-class UserSchema(Schema):
-    id = fields.Int()
-    # 昵称
-    nickname = fields.Str()
-    # 电话号码
-    phone_number = fields.Str()
-    # 邮箱
-    email = fields.Str()
-    password = fields.Str()
-    # 鱼豆
-    beans = fields.Str()
-    send_counter = fields.Str()
-    receive_counter = fields.Str()
-    wx_open_id = fields.Str()
-    wx_name = fields.Str()
-    update_time = fields.Str()

@@ -15,9 +15,7 @@ from app.models.base import Base
 from app.models.drift import Drift
 from app.models.gift import Gift
 from app.models.wish import Wish
-from app.spiders.yushu_book import YuShuBook
 from ext.db import db
-from utils.common import is_isbn_or_key
 
 
 class User(Base):
@@ -74,14 +72,8 @@ class User(Base):
         # 检验isbn 以及是否存在于yushu api中
         # 用户不能是赠书者又是索要者
         # 不能赠书多次相同图书(未送出 launched=False)
-        if is_isbn_or_key(isbn):
-            return False
-        yushu_book = YuShuBook()
-        yushu_book.search_by_isbn(isbn)
-        if not yushu_book.first:
-            return False
-        wishing = Wish.query.filter_by(user_id=self.id, isbn=isbn, is_deleted=False, launched=False).first()
-        gifting = Gift.query.filter_by(user_id=self.id, isbn=isbn, is_deleted=False, launched=False).first()
+        wishing = Wish.query.filter_by(user_id=self.id, isbn=isbn, launched=False).first()
+        gifting = Gift.query.filter_by(user_id=self.id, isbn=isbn, launched=False).first()
         if not wishing and not gifting:
             return True
         else:
@@ -91,7 +83,7 @@ class User(Base):
     def summary(self):
         return dict(
             nickname=self.nickname,
-            beans=self.beans,
+            beans=str(self.beans),
             email=self.email,
             send_receive=f'{self.send_counter}/{self.receive_counter}'
         )

@@ -6,7 +6,7 @@
 """
 from typing import List
 
-from app.view.book import BookViewModel
+from app.schema.model import BookSchema
 
 
 class MyGifts:
@@ -19,20 +19,18 @@ class MyGifts:
         self.gifts = self.__parse()
 
     def __parse(self):
-        temp_gifts = []
-        for gift in self.__gifts_of_mine:
-            my_gift = self.__matching(gift)
-            temp_gifts.append(my_gift)
-        return temp_gifts
+        return [self.__matching(gift) for gift in self.__gifts_of_mine]
 
     def __matching(self, gift):
+        schema = BookSchema()
         count = 0
         for wish_count in self.__wish_count_list:
             if gift.isbn == wish_count['isbn']:
                 count = wish_count['count']
+                break
         r = {
             'id': gift.id,
-            'book': BookViewModel(gift.book),
+            'book': schema.dump(gift.book).data,
             'wishes_count': count
         }
 

@@ -25,6 +25,12 @@ def default_handler(e):
 @app.errorhandler(ValidationError)
 def request_error(e):
     logger.error(e)
+    error_messages_list = []
+    for k, v in e.messages.items():
+        for k in v:
+            error_messages_list.append(k)
+    if len(error_messages_list) != 0:
+        VALIDATE_ERROR.message = error_messages_list
     return ErrorResponse(VALIDATE_ERROR).make()
 
 

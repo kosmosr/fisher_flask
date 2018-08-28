@@ -3,7 +3,7 @@ from flask import request, g
 from app import db
 from app.common.const import USER_NOT_EXIST, USER_PASSWORD_ERROR, REQUEST_USER_ID, TOKEN_INVALID, NOT_LOGIN, \
     USER_RAWPASSWORD_ERROR
-from app.common.httpcode import CREATED, OK, NotContent, Accepted
+from app.common.httpcode import CREATED, NotContent, Accepted
 from app.common.redis_key import reset_password_token_key, login_token_key
 from app.common.response import SuccessResponse, ErrorResponse
 from app.decorator import login_required
@@ -16,8 +16,6 @@ from utils.common import decode_token, check_token, generate_token
 from utils.email import send_email
 from . import api_v1
 
-__author__ = 'kosmosr'
-
 
 # 注册
 @api_v1.route('/users', methods=['POST'])
@@ -28,7 +26,7 @@ def register():
         user = User()
         user.set_attrs(schema.data)
         db.session.add(user)
-    return SuccessResponse(CREATED).make()
+    return SuccessResponse(CREATED)()
 
 
 # 登录
@@ -42,7 +40,7 @@ def login():
     if user.check_password(data['password']):
         token = generate_token(user.id, login_token_key, config.LOGIN_TOKEN_EXPIRE_TIME)
         data = {'token': token, 'nickname': user.nickname}
-        return SuccessResponse(OK, data=data).make()
+        return SuccessResponse(data=data)()
     else:
         return ErrorResponse(USER_PASSWORD_ERROR).make()
 
@@ -58,7 +56,7 @@ def forget_password_request():
     token = generate_token(user.id, reset_password_token_key, config.RESET_TOKEN_EXPIRE_TIME)
     forget_url = config.FRONT_RESET_EMAIL_URL
     send_email(email, '重置你的密码', 'email/reset_password.html', user=user, token=token, forget_url=forget_url)
-    return SuccessResponse(Accepted).make()
+    return SuccessResponse(Accepted)()
 
 
 # 重置密码
@@ -73,7 +71,7 @@ def forget_password(token):
     if check_token(token, token_from_redis):
         User.reset_password(payload['uid'], password)
         redis.delete(redis_key)
-        return SuccessResponse(NotContent).make()
+        return SuccessResponse(NotContent)()
     else:
         return ErrorResponse(TOKEN_INVALID).make()
 
@@ -94,7 +92,7 @@ def change_password():
         if not user.check_password(old_password):
             return ErrorResponse(USER_RAWPASSWORD_ERROR).make()
         User.reset_password(user.id, new_password)
-        return SuccessResponse(NotContent).make()
+        return SuccessResponse(NotContent)()
     else:
         return ErrorResponse(NOT_LOGIN).make()
 
@@ -107,6 +105,6 @@ def logout():
     if uid:
         key = login_token_key.format(uid)
         redis.delete(key)
-        return SuccessResponse(NotContent).make()
+        return SuccessResponse(NotContent)()
     else:
         return ErrorResponse(NOT_LOGIN).make()

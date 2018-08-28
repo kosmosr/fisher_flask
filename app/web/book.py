@@ -8,7 +8,6 @@
 from flask import request, g
 
 from app.common.const import REQUEST_USER_ID
-from app.common.httpcode import OK
 from app.common.response import SuccessResponse
 from app.decorator import can_login_url
 from app.models.gift import Gift
@@ -31,7 +30,6 @@ def search(keyword):
     keyword = data['keyword']
     page = data['page']
     per_page = data['per_page']
-    # md5_params = md5_n(keyword + str(page) + str(per_page))
 
     yushu_book = YuShuBook()
     if is_isbn_or_key(keyword):
@@ -43,8 +41,7 @@ def search(keyword):
         'current_page': page,
         'per_page': per_page
     }
-    # data = [data for data in yushu_book.books if data.]
-    return SuccessResponse(OK, data=yushu_book.books, pagination=pagination).make()
+    return SuccessResponse(data=yushu_book.books, pagination=pagination)()
 
 
 @api_v1.route('/book/<isbn>', methods=['GET'])
@@ -56,7 +53,6 @@ def book_detail(isbn):
     # 取书籍详情数据
     yushu_book = YuShuBook()
     yushu_book.search_by_isbn(isbn)
-    # book = BookViewModel(yushu_book.first)
 
     uid = getattr(g, REQUEST_USER_ID, None)
     if uid:
@@ -73,13 +69,11 @@ def book_detail(isbn):
 
     book_schema = BookSchema()
     book_data = book_schema.dump(yushu_book.first).data  # type: dict
-    has = {'has_in_gifts': has_in_gifts, 'has_in_wishes': has_in_wishes}  # type:dict
+    has = {'has_in_gifts': has_in_gifts, 'has_in_wishes': has_in_wishes}
     trade = TradeModelSchema()
     gifts = {'gifts': trade.dump(trade_gifts_model).data}
     wishes = {'wishes': trade.dump(trade_wishes_model).data}
+    book_data.update(**has, **wishes, **gifts)
     schema = BookDetailViewSchema()
-    book_data.update(has)
-    book_data.update(wishes)
-    book_data.update(gifts)
     data = schema.dump(book_data).data
-    return SuccessResponse(OK, data=data).make()
+    return SuccessResponse(data=data)()

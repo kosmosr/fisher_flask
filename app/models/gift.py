@@ -30,12 +30,13 @@ class Gift(Base):
 
     @classmethod
     def get_user_gifts(cls, uid):
-        return Gift.query.filter_by(user_id=uid, launched=False).order_by(desc(Gift.create_time)).all()
+        return Gift.query.filter_by(user_id=uid, launched=False, is_deleted=False).order_by(
+            desc(Gift.create_time)).all()
 
     @classmethod
     def get_wish_counts(cls, isbns: List):
-        counts = db.session.query(func.count(Wish.id), Wish.isbn) \
-            .filter(Wish.launched == False, Wish.isbn.in_(isbns)) \
+        counts = db.session.query(func.count(Wish.isbn), Wish.isbn) \
+            .filter(Wish.launched == False, Wish.isbn.in_(isbns), Wish.is_deleted == False) \
             .group_by(Wish.isbn).all()
         count_list = [{'count': count[0], 'isbn': count[1]} for count in counts]
         return count_list

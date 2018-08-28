@@ -21,7 +21,7 @@ class TradeInfo:
     @staticmethod
     def __map_to_trade(single):
         return {
-            'user_name': User.query.filter_by(id=single.user_id).first().nickname,
+            'user_name': User.query.filter_by(id=single.user_id).first_or_404().nickname,
             'time': single.create_time.strftime('%Y-%m-%d'),
             'id': single.id
         }

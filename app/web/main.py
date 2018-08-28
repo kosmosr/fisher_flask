@@ -1,7 +1,6 @@
 from flask import g
 
 from app.common.const import REQUEST_USER_ID, USER_NOT_EXIST
-from app.common.httpcode import OK
 from app.common.response import SuccessResponse, ErrorResponse
 from app.decorator import login_required
 from app.models.gift import Gift
@@ -18,7 +17,7 @@ def index():
     recent_gifts = Gift.recent()
     schema = BookSchema(only=('title', 'summary', 'author', 'isbn', 'image'))
     recent = [schema.dump(gift.book).data for gift in recent_gifts]
-    return SuccessResponse(http_code=OK, data=recent).make()
+    return SuccessResponse(data=recent)()
 
 
 @login_required
@@ -30,4 +29,4 @@ def personal_center():
         return ErrorResponse(USER_NOT_EXIST).make()
     schema = UserPersonalSchema()
     data = schema.dump(user.summary).data
-    return SuccessResponse(http_code=OK, data=data).make()
+    return SuccessResponse(data=data)()

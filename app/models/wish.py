@@ -6,27 +6,28 @@
 """
 from typing import List
 
-from sqlalchemy import Column, Integer, String, Boolean, desc, func
+from sqlalchemy import Column, Integer, String, desc, func
 
-from ext.db import db
 from app.models.base import Base
 from app.spiders.yushu_book import YuShuBook
+from ext.db import db
 
 
 class Wish(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, nullable=False)
     isbn = Column(String(15), nullable=False)
-    launched = Column(Boolean, default=False)
+    launched = db.Column(db.Boolean, default=False)
 
     @classmethod
     def get_user_wishes(cls, uid):
-        return Wish.query.filter_by(user_id=uid, launched=False).order_by(desc(Wish.create_time)).all()
+        return Wish.query.filter_by(user_id=uid, launched=False, is_deleted=False).order_by(
+            desc(Wish.create_time)).all()
 
     @classmethod
     def get_gift_counts(cls, isbns: List):
-        counts = db.session.query(func.count(Gift.id), Gift.isbn) \
-            .filter(Gift.launched == False, Gift.isbn.in_(isbns)) \
+        counts = db.session.query(func.count(Gift.isbn), Gift.isbn) \
+            .filter(Gift.launched == False, Gift.isbn.in_(isbns), Gift.is_deleted == False) \
             .group_by(Gift.isbn).all()
         count_list = [{'count': count[0], 'isbn': count[1]} for count in counts]
         return count_list

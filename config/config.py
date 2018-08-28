@@ -37,6 +37,7 @@ class DevelopmentConfig:
 
     # RESET EMAIL URL
     FRONT_RESET_EMAIL_URL = 'http://localhost:8081'
+    FRONT_DRIFT_URL = 'http://localhost:8081/drift'
 
 
 class ProductionConfig:

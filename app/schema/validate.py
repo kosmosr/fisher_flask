@@ -21,14 +21,18 @@ class BookSearchValSchema(PaginationValSchema):
 
 
 class LoginValSchema(Schema):
-    email = fields.Str(required=True, validate=validate.Email())
-    password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR))
+    email = fields.Str(required=True, validate=validate.Email(),
+                       error_messages={'required': '请输入邮箱'})
+    password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR),
+                          error_messages={'required': '请输入密码'})
 
 
 class RegisterValSchema(Schema):
-    nickname = fields.Str(required=True, validate=validate.Length(min=2, max=10, error=VALIDATE_NICKNAME_ERROR))
-    email = fields.Str(required=True, validate=validate.Email())
-    password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR))
+    nickname = fields.Str(required=True, validate=validate.Length(min=2, max=10, error=VALIDATE_NICKNAME_ERROR),
+                          error_messages={'required': '请输入昵称'})
+    email = fields.Str(required=True, validate=validate.Email(), error_messages={'required': '请输入邮箱'})
+    password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR),
+                          error_messages={'required': '请输入密码'})
 
     @validates('nickname')
     def validate_nickname(self, value):
@@ -44,12 +48,14 @@ class RegisterValSchema(Schema):
 
 
 class ResetEmailValSchema(Schema):
-    email = fields.Str(required=True, validate=validate.Email())
+    email = fields.Str(required=True, validate=validate.Email(), error_messages={'required': '请输入邮箱'})
 
 
 class ForgetPasswordValSchema(Schema):
-    password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR))
-    password2 = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR))
+    password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR),
+                          error_messages={'required': '请输入密码'})
+    password2 = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR),
+                           error_messages={'required': '请输入密码'})
 
     @pre_load
     def pre_load(self, data):
@@ -58,11 +64,33 @@ class ForgetPasswordValSchema(Schema):
 
 
 class ChangePasswordValSchema(Schema):
-    old_password = fields.Str()
-    new_password = fields.Str()
-    confirm_password = fields.Str()
+    old_password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR),
+                              error_messages={'required': '请输入旧密码'})
+    new_password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR),
+                              error_messages={'required': '请输入新密码'})
+    confirm_password = fields.Str(required=True, validate=validate.Length(min=6, max=32, error=VALIDATE_PASSWORD_ERROR),
+                                  error_messages={'required': '请再一次输入新密码'})
 
     @pre_load
     def pre_load(self, data):
         if data['confirm_password'] != data['new_password']:
             raise ValidationError(message=VALIDATE_RESERT_PASSWORD_ERROR)
+
+
+class DriftValSchema(Schema):
+    recipient_name = fields.Str(required=True,
+                                validate=validate.Length(min=2, max=20, error='收件人姓名长度必须在2到20个字符之间'),
+                                error_messages={'required': '请输入收件人姓名'})
+    mobile = fields.Str(required=True,
+                        validate=validate.Regexp('^1[0-9]{10}$', error='请输入正确的手机号'),
+                        error_messages={'required': '请输入收件人手机号'})
+    message = fields.Str()
+    address = fields.Str(required=True,
+                         validate=validate.Length(min=10, max=70, error='地址要大于10个字'),
+                         error_messages={'required': '请输入收件人地址'})
+    gift_id = fields.Int(required=True, error_messages={'required': 'required gift_id'})
+
+
+class DriftPendingStatusSchema(Schema):
+    status = fields.Int(required=True, validate=validate.Range(min=2, max=4),
+                        error_messages={'required': 'required status'})
