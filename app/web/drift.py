@@ -18,7 +18,7 @@ from . import api_v1
 
 
 @login_required
-@api_v1.route('/drift/<int:gid>', methods=['GET'])
+@api_v1.route('/drift/<gid>', methods=['GET'])
 def drift(gid):
     uid = getattr(g, REQUEST_USER_ID)
     current_user = User.query.get_or_404(uid)
@@ -27,7 +27,7 @@ def drift(gid):
         # 不能自己给自己发起鱼漂
         return ErrorResponse(SEND_DRIFT_IS_YOURSELF).make()
     # 检验当前用户能否发起鱼漂请求
-    can = current_user.can_send_drift()
+    can = current_user.can_send_drift(current_gift.isbn)
     if not can:
         return ErrorResponse(USER_CANNOT_DRIFT).make()
     user_from_gift = User.query.get_or_404(current_gift.user_id).summary
@@ -77,6 +77,10 @@ def drift_pending(did):
             wish = Wish.query.filter_by(isbn=drift.isbn, user_id=drift.requester_id, launched=False).first_or_404()
             wish.launched = True
             wish.is_deleted = True
+            requester = User.query.get_or_404(drift.requester_id)
+            requester.receive_counter += 1
+            gifter = User.query.get_or_404(drift.gifter_id)
+            gifter.send_counter += 1
         elif status == PendingStatus.Reject.value:
             # 拒绝 当前用户为赠书者
             drift = Drift.query.filter_by(gifter_id=uid, id=did).first_or_404()

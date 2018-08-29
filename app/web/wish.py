@@ -1,7 +1,8 @@
 from flask import g
 
 from app import db
-from app.common.const import REQUEST_USER_ID, SAVE_WISH_ERROR, SATISFY_WISH_ERROR, SATISFY_WISH_MSG, BOOK_ISBN_ERROR
+from app.common.const import REQUEST_USER_ID, SAVE_WISH_ERROR, SATISFY_WISH_ERROR, SATISFY_WISH_MSG, BOOK_ISBN_ERROR, \
+    USER_CANNOT_DRIFT
 from app.common.response import ErrorResponse, SuccessResponse
 from app.decorator import login_required
 from app.models.gift import Gift
@@ -53,7 +54,6 @@ def save_to_wish(isbn):
 def satisfy_wish(wid):
     """
     向他人赠送书籍
-    todo 检验当前用户发起鱼漂条件
     :param wid: 心愿id
     :return:
     """
@@ -63,10 +63,13 @@ def satisfy_wish(wid):
     gift = Gift.query.filter_by(user_id=uid, isbn=wish.isbn).first()
     if not gift:
         return ErrorResponse(SATISFY_WISH_ERROR).make()
+    can = wisher.can_send_drift()
+    if not can:
+        return ErrorResponse(USER_CANNOT_DRIFT).make()
     gifter = User.query.filter(User.id == gift.user_id, User.is_deleted == False).first()
     drift_url = config.FRONT_DRIFT_URL
     send_email(wisher.email, '有人想送你一本书', 'email/satisify_wish.html', wisher=wisher, gifter=gifter, gift=gift,
-               drift_url=drift_url, wish=wish, wid=wid)
+               drift_url=drift_url, wish=wish)
     return SuccessResponse(data=SATISFY_WISH_MSG)()
 
 
