@@ -59,8 +59,11 @@ class User(Base):
             user.password = password
             db.session.add(user)
 
-    def can_send_drift(self):
+    def can_send_drift(self, isbn=None):
         if self.beans < 1:
+            return False
+        current_wish = Wish.query.filter_by(user_id=self.id, launched=False, isbn=isbn).first()
+        if not current_wish:
             return False
         success_gifts_count = Gift.query \
             .filter_by(user_id=self.id, launched=True).count()
