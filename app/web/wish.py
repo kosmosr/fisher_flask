@@ -2,7 +2,7 @@ from flask import g
 
 from app import db
 from app.common.const import REQUEST_USER_ID, SAVE_WISH_ERROR, SATISFY_WISH_ERROR, SATISFY_WISH_MSG, BOOK_ISBN_ERROR, \
-    USER_CANNOT_DRIFT
+    USER_CANNOT_DRIFT, SATISFY_WISHER_ERROR
 from app.common.response import ErrorResponse, SuccessResponse
 from app.decorator import login_required
 from app.models.gift import Gift
@@ -63,6 +63,9 @@ def satisfy_wish(wid):
     gift = Gift.query.filter_by(user_id=uid, isbn=wish.isbn).first()
     if not gift:
         return ErrorResponse(SATISFY_WISH_ERROR).make()
+    current_wish = Wish.query.filter_by(user_id=wisher.id, launched=False, isbn=wish.isbn).first()
+    if not current_wish:
+        return ErrorResponse(SATISFY_WISHER_ERROR).make()
     can = wisher.can_send_drift()
     if not can:
         return ErrorResponse(USER_CANNOT_DRIFT).make()

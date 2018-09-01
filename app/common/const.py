@@ -28,6 +28,7 @@ SATISFY_WISH_ERROR = ErrorCode(BadRequest.http_code, '06', '你还没有上传�
 SEND_DRIFT_IS_YOURSELF = ErrorCode(BadRequest.http_code, '07', '这本书是你自己的，不能向自己索要书籍噢')
 REDRAW_GIFT_ERROR = ErrorCode(BadRequest.http_code, '08', '这个礼物正处于交易状态，请先前往鱼漂完成该交易')
 BOOK_ISBN_ERROR = ErrorCode(BadRequest.http_code, '09', '输入的ISBN错误，请核准后再输入')
+SATISFY_WISHER_ERROR = ErrorCode(BadRequest.http_code, '10', '对方尚未把此书加入到心愿清单，无法向对方赠送')
 
 # 401
 NOT_LOGIN = ErrorCode(Unauthorized.http_code, '01', '当前未登录')
